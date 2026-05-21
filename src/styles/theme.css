@@ -1,0 +1,22 @@
+:root {
+  --bg-page: #f4f4f4;
+  --bg-surface: #ffffff;
+  --bg-soft: #ececec;
+  --text-primary: #191919;
+  --text-secondary: #5b5b5b;
+  --accent: #a33a2f;
+  --accent-dark: #7e2d25;
+  --border-soft: #dfdfdf;
+  --shadow-soft: 0 12px 28px rgba(23, 23, 23, 0.08);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --container: 1280px;
+}
+

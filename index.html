@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stories by Vamshe</title>
+    <style>
+      body {
+        margin: 0;
+        background: #f4f4f4;
+        color: #1b1b1b;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      #boot-status {
+        margin: 18px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #fff4de;
+        border: 1px solid #f0d5a2;
+        font-size: 14px;
+      }
+      #boot-status.error {
+        background: #ffeaea;
+        border-color: #f4b2b2;
+        color: #6f2020;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot-status">Loading app...</div>
+    <div id="root"></div>
+    <script>
+      (function () {
+        var boot = document.getElementById("boot-status");
+        window.__appBootOk = function () {
+          if (boot) boot.remove();
+        };
+        window.addEventListener("error", function (event) {
+          if (!boot) return;
+          boot.className = "error";
+          boot.textContent = "Startup error: " + (event.message || "Unknown error");
+        });
+        window.addEventListener("unhandledrejection", function (event) {
+          if (!boot) return;
+          var reason = event && event.reason ? event.reason : "Unknown promise rejection";
+          boot.className = "error";
+          boot.textContent =
+            "Startup error: " + (reason && reason.message ? reason.message : String(reason));
+        });
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
