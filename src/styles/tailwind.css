@@ -1,0 +1,16 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-brandBg text-brandText font-body;
+}
+
+.section-shell {
+  @apply mx-auto w-[min(92%,1200px)];
+}
+
+.gold-kicker {
+  @apply font-body text-xs uppercase tracking-[0.24em] text-brandGold;
+}
+

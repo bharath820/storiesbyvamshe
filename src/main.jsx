@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./app/router";
 import { AppErrorBoundary } from "./components/layout/AppErrorBoundary";
+import "./styles/tailwind.css";
 import "./styles/theme.css";
 import "./styles/base.css";
 

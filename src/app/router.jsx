@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import { SiteHeader } from "../components/layout/SiteHeader";
-import { SiteFooter } from "../components/layout/SiteFooter";
-import { HomePage } from "../pages/HomePage";
+import { SiteHeader } from "../components/layout/SiteHeader.tsx";
+import { SiteFooter } from "../components/layout/SiteFooter.tsx";
+import { HomePage } from "../pages/HomePage.tsx";
 import { GalleryPage } from "../pages/GalleryPage";
 import { VideosPage } from "../pages/VideosPage";
 import { BlogsPage } from "../pages/BlogsPage";

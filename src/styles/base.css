@@ -12,9 +12,9 @@ body,
 }
 
 body {
-  font-family: "Georgia", "Times New Roman", serif;
-  background: var(--bg-page);
-  color: var(--text-primary);
+  font-family: "Inter", sans-serif;
+  background: #ffffff;
+  color: #1e1e1e;
 }
 
 a {
