@@ -1,5 +1,6 @@
 ﻿import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { categories, featuredStories, hero, instagram, stats, testimonials } from '../data/homeContent';
 import type { Category } from '../types/home';
 import { subscribeHomepageConfig } from '../lib/firestoreService';
@@ -252,8 +253,8 @@ export function HomePage() {
           <div>
             <h3 className="font-display text-4xl leading-tight">Every Story Deserves<br />To Be Remembered.<br />Let's Create Yours.</h3>
             <div className="mt-7 flex flex-wrap gap-3">
-              <button className="rounded-full bg-brandText px-6 py-3 text-sm text-white">Book A Session</button>
-              <button className="rounded-full border border-brandBorder bg-white px-6 py-3 text-sm">Contact Us</button>
+              <Link to="/contact" className="rounded-full bg-brandText px-6 py-3 text-sm text-white">Book A Session</Link>
+              <Link to="/contact" className="rounded-full border border-brandBorder bg-white px-6 py-3 text-sm">Contact Us</Link>
             </div>
           </div>
           <img src="/assets/home/cta-wedding.jpg" alt="Emotional wedding portrait with warm cinematic tones" className="h-[21rem] w-full rounded-[26px] object-cover" />
