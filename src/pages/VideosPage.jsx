@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CategoryTabs } from "../components/filters/CategoryTabs";
 import { SearchBox } from "../components/filters/SearchBox";
 import { VideoCard } from "../components/media/VideoCard";
-import { getPublishedCategories, getPublishedVideos } from "../lib/firestoreService";
-import { subscribeToContentChanges } from "../lib/localDataStore";
+import { subscribePublishedCategories, subscribePublishedCollection } from "../lib/firestoreService";
 
 export function VideosPage() {
   const [categories, setCategories] = useState([]);
@@ -12,29 +11,20 @@ export function VideosPage() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const [categoryRows, videoRows] = await Promise.all([getPublishedCategories(), getPublishedVideos()]);
-      if (!isActive) return;
+    let categoryRows = [];
+    let videoRows = [];
+    function sync() {
       const catMap = new Map(categoryRows.map((c) => [c.id, c.name]));
       setCategories(categoryRows);
-      setVideos(
-        videoRows.map((video) => ({
+      setVideos([...videoRows].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""))).map((video) => ({
           ...video,
           categoryName: catMap.get(video.categoryId) || "General"
-        }))
-      );
+        })));
     }
-
-    load().catch(() => {});
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
-    });
-
+    const stopCategories = subscribePublishedCategories((rows) => { categoryRows = rows; sync(); });
+    const stopVideos = subscribePublishedCollection("videos", (rows) => { videoRows = rows; sync(); });
     return () => {
-      isActive = false;
-      unsubscribe();
+      stopCategories(); stopVideos();
     };
   }, []);
 

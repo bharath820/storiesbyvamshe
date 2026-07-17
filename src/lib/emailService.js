@@ -23,6 +23,7 @@ export async function sendContactEmail(values) {
         phone: values.phone,
         event_type: values.eventType,
         event_date: values.eventDate,
+        venue: values.venue,
         message: values.message
       },
       { publicKey: config.publicKey }
@@ -37,6 +38,7 @@ export async function sendContactEmail(values) {
       `Phone: ${values.phone}`,
       `Event Type: ${values.eventType}`,
       `Event Date: ${values.eventDate || "Not shared"}`,
+      `Venue / City: ${values.venue || "Not shared"}`,
       "",
       values.message
     ].join("\n")

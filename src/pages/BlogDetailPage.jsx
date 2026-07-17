@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ResolvedImage } from "../components/media/ResolvedImage";
-import { getPublishedBlogs } from "../lib/firestoreService";
-import { subscribeToContentChanges } from "../lib/localDataStore";
+import { subscribePublishedCollection } from "../lib/firestoreService";
 import { prettyDate } from "../utils/format";
 
 export function BlogDetailPage() {
@@ -10,23 +9,9 @@ export function BlogDetailPage() {
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const rows = await getPublishedBlogs();
-      if (!isActive) return;
+    return subscribePublishedCollection("blogs", (rows) => {
       setBlog(rows.find((item) => item.slug === slug) || null);
-    }
-
-    load().catch(() => {});
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
     });
-
-    return () => {
-      isActive = false;
-      unsubscribe();
-    };
   }, [slug]);
 
   if (!blog) {

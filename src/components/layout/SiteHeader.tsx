@@ -20,14 +20,20 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition ${scrolled ? 'border-b border-brandBorder bg-white/75 backdrop-blur-md' : 'bg-white/95'}`}>
-      <div className="mx-auto flex w-[min(94%,1220px)] items-center justify-between gap-4 py-4">
-        <NavLink to="/" className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-black text-xs text-white">SV</span>
-          <span className="hidden sm:block">
-            <strong className="block font-display text-lg font-medium">Stories by Vamshe</strong>
-            <small className="text-xs text-brandSubtext">Photography & Films</small>
-          </span>
+    <header
+      className={`sticky top-0 z-50 bg-white transition-shadow ${
+        scrolled ? 'border-b border-brandBorder shadow-sm' : ''
+      }`}
+    >
+      <div className="mx-auto flex w-[min(94%,1220px)] items-center justify-between gap-4 py-3 sm:py-4">
+        <NavLink to="/" className="flex items-center">
+          <img
+            src="/assets/brand/stories-by-vamshe-logo.png"
+            alt="Stories by Vamshe logo"
+            className="h-14 w-auto max-w-[240px] object-contain sm:h-16 sm:max-w-[300px]"
+            loading="eager"
+            decoding="async"
+          />
         </NavLink>
         <nav className="hidden items-center gap-5 md:flex">
           {links.map((link) => (

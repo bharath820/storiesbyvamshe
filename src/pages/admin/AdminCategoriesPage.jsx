@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { defaultCategories } from "../../data/defaultCategories";
 import {
   createDocument,
-  listCollection,
   removeDocument,
+  subscribeCollection,
   updateDocument
 } from "../../lib/firestoreService";
 import { slugify } from "../../utils/slugify";
@@ -14,13 +14,8 @@ export function AdminCategoriesPage() {
   const [type, setType] = useState("both");
   const [actionError, setActionError] = useState("");
 
-  async function load() {
-    const categories = await listCollection("categories");
-    setRows(categories);
-  }
-
   useEffect(() => {
-    load();
+    return subscribeCollection("categories", setRows, (error) => setActionError(error.message));
   }, []);
 
   async function addCategory(event) {
@@ -35,7 +30,6 @@ export function AdminCategoriesPage() {
       setName("");
       setType("both");
       setActionError("");
-      await load();
     } catch (error) {
       setActionError(error.message || "Could not save category.");
     }
@@ -49,7 +43,6 @@ export function AdminCategoriesPage() {
         .map((item) => createDocument("categories", item));
       await Promise.all(jobs);
       setActionError("");
-      await load();
     } catch (error) {
       setActionError(error.message || "Could not seed categories.");
     }
@@ -94,7 +87,6 @@ export function AdminCategoriesPage() {
                 type="button"
                 onClick={() =>
                   updateDocument("categories", row.id, { isActive: !row.isActive })
-                    .then(load)
                     .catch((error) => setActionError(error.message || "Could not update category."))
                 }
               >
@@ -105,7 +97,6 @@ export function AdminCategoriesPage() {
                 type="button"
                 onClick={() =>
                   removeDocument("categories", row.id)
-                    .then(load)
                     .catch((error) => setActionError(error.message || "Could not delete category."))
                 }
               >

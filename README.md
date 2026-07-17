@@ -1,9 +1,9 @@
-# Stories by Vamshe - Static Admin/User Mode
+# Stories by Vamshe
 
 React app with:
 - Public pages: Home, Gallery, Videos, VBlogs, About, Contact
 - Admin panel: Categories, Gallery, Videos, Blogs, Homepage content
-- Static local data flow (admin updates are reflected on public pages)
+- Shared Firebase content flow with a browser-local demo fallback
 
 ## 1) Setup
 
@@ -20,32 +20,38 @@ cp .env.example .env
 npm run dev
 ```
 
-## 2) Admin Login (Dummy Credentials)
+## 2) Firebase Setup
+
+1. Create a Firebase project and enable Email/Password Authentication, Firestore, and Storage.
+2. Copy `.env.example` to `.env` and fill every `VITE_FIREBASE_*` value.
+3. Create the admin user in Firebase Authentication.
+4. Deploy `firestore.rules` and `storage.rules` with the Firebase CLI.
+
+When Firebase is configured, public pages listen for published content in real time and admin uploads are stored in Firebase Storage.
+
+## 3) Admin Login
 
 - URL: `/admin/login`
-- Email: `admin@stories.local`
-- Password: `Admin@12345`
+- Use the Firebase Authentication user created during setup.
+- If Firebase is not configured, local demo credentials are `admin@stories.local` / `Admin@12345`.
 
 This is temporary and intentionally hardcoded for local/static mode.
 
-## 3) Static Data Behavior
+## 4) Demo Fallback
 
-- All admin content is saved in browser localStorage.
-- Data persists across refreshes on the same browser/device.
-- Data is not shared across different devices/browsers.
-- Initial content is seeded from demo data and can be overridden from admin.
+- Bundled demo content is used only when Firebase environment variables are missing.
+- Demo changes persist in the current browser and are not mixed with Firebase data.
 
-## 4) Media Behavior
+## 5) Media Behavior
 
-- Gallery photos, blog covers, and homepage hero slides:
-  - Public image URL supported and used for final save
-  - Local image file selection supported for validation/preview only (max 5MB)
-  - Static mode does not persist file binaries/base64 to localStorage
+- Gallery photos support multi-image drag and drop and publish immediately.
+- Homepage images, blog covers, and video thumbnails use drag-and-drop uploads.
+- Images are limited to 5MB and stored in Firebase Storage when configured.
 - Videos:
   - Embed URL supported
   - Video file upload is disabled in static mode
 
-## 5) Contact Email Variables (Optional)
+## 6) Contact Email Variables (Optional)
 
 Preferred (EmailJS):
 - `VITE_EMAILJS_SERVICE_ID`
@@ -57,7 +63,7 @@ Fallback:
 
 If EmailJS keys are missing, the contact form opens the default mail client using `mailto`.
 
-## 6) Route Map
+## 7) Route Map
 
 - `/`
 - `/gallery`

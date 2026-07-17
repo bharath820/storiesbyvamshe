@@ -151,5 +151,89 @@ export const demoBlogs = [
     status: "published",
     publishedAt: "2026-01-22T12:00:00.000Z",
     createdAt: "2026-01-22T12:00:00.000Z"
+  },
+  {
+    id: "blog-2",
+    title: "The Magic of Golden Hour Portraits",
+    slug: "the-magic-of-golden-hour-portraits",
+    excerpt: "Simple ways to use warm evening light for natural, timeless portraits.",
+    body: "Golden hour brings soft shadows and warm tones. Choose an open location, arrive early, and keep your subjects moving naturally.",
+    coverImage:
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-02-02T12:00:00.000Z",
+    createdAt: "2026-02-02T12:00:00.000Z"
+  },
+  {
+    id: "blog-3",
+    title: "Choosing a Storytelling Wedding Venue",
+    slug: "choosing-a-storytelling-wedding-venue",
+    excerpt: "What to look for in a venue when photographs matter as much as the celebration.",
+    body: "Look for varied backdrops, uncluttered preparation rooms, and dependable natural light throughout the day.",
+    coverImage:
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-02-12T12:00:00.000Z",
+    createdAt: "2026-02-12T12:00:00.000Z"
+  },
+  {
+    id: "blog-4",
+    title: "A Guide to Candid Couple Photos",
+    slug: "a-guide-to-candid-couple-photos",
+    excerpt: "Gentle prompts that create honest expressions without stiff posing.",
+    body: "Focus on movement, conversation, and small shared moments. The best candid frames happen when couples forget about the camera.",
+    coverImage:
+      "https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-02-22T12:00:00.000Z",
+    createdAt: "2026-02-22T12:00:00.000Z"
+  },
+  {
+    id: "blog-5",
+    title: "Details That Complete Your Wedding Story",
+    slug: "details-that-complete-your-wedding-story",
+    excerpt: "Why invitations, jewellery, flowers, and heirlooms deserve a place in the story.",
+    body: "Gather meaningful details before the day begins so they can be photographed calmly and woven naturally into the final gallery.",
+    coverImage:
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-03-04T12:00:00.000Z",
+    createdAt: "2026-03-04T12:00:00.000Z"
+  },
+  {
+    id: "blog-6",
+    title: "Creating a Stress-Free Photo Timeline",
+    slug: "creating-a-stress-free-photo-timeline",
+    excerpt: "Build breathing room into the day and enjoy every important moment.",
+    body: "Start with ceremony timings, reserve portrait windows around the best light, and include buffers for travel and unexpected delays.",
+    coverImage:
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-03-14T12:00:00.000Z",
+    createdAt: "2026-03-14T12:00:00.000Z"
+  },
+  {
+    id: "blog-7",
+    title: "How to Feel Natural in Front of the Camera",
+    slug: "how-to-feel-natural-in-front-of-the-camera",
+    excerpt: "Practical tips for relaxed expressions and photographs that feel like you.",
+    body: "Wear something comfortable, focus on each other, and allow movement between poses. Confidence grows when the session feels playful.",
+    coverImage:
+      "https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-03-24T12:00:00.000Z",
+    createdAt: "2026-03-24T12:00:00.000Z"
+  },
+  {
+    id: "blog-8",
+    title: "Preserving Celebrations Through Albums",
+    slug: "preserving-celebrations-through-albums",
+    excerpt: "Turn digital memories into a handcrafted story your family can revisit.",
+    body: "A thoughtful album balances emotional highlights, quiet details, and the people who shaped the celebration from beginning to end.",
+    coverImage:
+      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80",
+    status: "published",
+    publishedAt: "2026-04-03T12:00:00.000Z",
+    createdAt: "2026-04-03T12:00:00.000Z"
   }
 ];

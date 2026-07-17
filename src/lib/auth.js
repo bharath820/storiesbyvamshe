@@ -1,80 +1,51 @@
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { firebaseAuth, isFirebaseConfigured } from "./firebaseClient";
+
 const ADMIN_SESSION_KEY = "storiesbyvamshe.admin.session.v1";
 const AUTH_CHANGED_EVENT = "storiesbyvamshe:auth-changed";
-
 export const DUMMY_ADMIN_EMAIL = "admin@stories.local";
 export const DUMMY_ADMIN_PASSWORD = "Admin@12345";
 
-function canUseStorage() {
-  return typeof window !== "undefined" && Boolean(window.localStorage);
-}
-
-function emitAuthChanged() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new window.CustomEvent(AUTH_CHANGED_EVENT));
-}
-
-function parseSession(raw) {
-  if (!raw) return null;
+function localSession() {
   try {
-    const parsed = JSON.parse(raw);
-    if (!parsed || parsed.isAdmin !== true) return null;
-    return parsed;
+    const value = JSON.parse(window.localStorage.getItem(ADMIN_SESSION_KEY));
+    return value?.isAdmin ? value : null;
   } catch {
     return null;
   }
 }
 
 export function getAdminSession() {
-  if (!canUseStorage()) return null;
-  return parseSession(window.localStorage.getItem(ADMIN_SESSION_KEY));
-}
-
-export function isAdminLoggedIn() {
-  return Boolean(getAdminSession());
+  if (isFirebaseConfigured) return firebaseAuth.currentUser;
+  return typeof window === "undefined" ? null : localSession();
 }
 
 export function subscribeToAuthChanges(callback) {
+  if (isFirebaseConfigured) return onAuthStateChanged(firebaseAuth, callback);
   if (typeof window === "undefined") return () => {};
-
-  const onCustom = () => callback();
-  const onStorage = (event) => {
-    if (event.key === ADMIN_SESSION_KEY) callback();
-  };
-
-  window.addEventListener(AUTH_CHANGED_EVENT, onCustom);
-  window.addEventListener("storage", onStorage);
-
+  const sync = () => callback(localSession());
+  window.addEventListener(AUTH_CHANGED_EVENT, sync);
+  window.addEventListener("storage", sync);
+  Promise.resolve().then(sync);
   return () => {
-    window.removeEventListener(AUTH_CHANGED_EVENT, onCustom);
-    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(AUTH_CHANGED_EVENT, sync);
+    window.removeEventListener("storage", sync);
   };
 }
 
-export function loginAdmin(email, password) {
-  const normalizedEmail = (email || "").trim().toLowerCase();
-  const normalizedPassword = password || "";
-
-  if (normalizedEmail !== DUMMY_ADMIN_EMAIL || normalizedPassword !== DUMMY_ADMIN_PASSWORD) {
-    return Promise.reject(new Error("Invalid admin credentials."));
+export async function loginAdmin(email, password) {
+  if (isFirebaseConfigured) return (await signInWithEmailAndPassword(firebaseAuth, email.trim(), password)).user;
+  if (email.trim().toLowerCase() !== DUMMY_ADMIN_EMAIL || password !== DUMMY_ADMIN_PASSWORD) {
+    throw new Error("Invalid admin credentials.");
   }
-
-  if (!canUseStorage()) {
-    return Promise.reject(new Error("Admin login requires browser storage support."));
-  }
-
-  const session = {
-    isAdmin: true,
-    email: DUMMY_ADMIN_EMAIL,
-    loggedInAt: new Date().toISOString()
-  };
+  const session = { isAdmin: true, email: DUMMY_ADMIN_EMAIL, loggedInAt: new Date().toISOString() };
   window.localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
-  emitAuthChanged();
-  return Promise.resolve(session);
+  window.dispatchEvent(new window.CustomEvent(AUTH_CHANGED_EVENT));
+  return session;
 }
 
-export function logoutAdmin() {
-  if (!canUseStorage()) return Promise.resolve();
+export async function logoutAdmin() {
+  if (isFirebaseConfigured) return signOut(firebaseAuth);
   window.localStorage.removeItem(ADMIN_SESSION_KEY);
-  emitAuthChanged();
-  return Promise.resolve();
+  window.dispatchEvent(new window.CustomEvent(AUTH_CHANGED_EVENT));
 }

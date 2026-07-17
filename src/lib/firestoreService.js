@@ -1,19 +1,49 @@
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where
+} from "firebase/firestore";
 import { toDateValue } from "../utils/format";
-import { readContentState, updateContentState } from "./localDataStore";
+import { demoHomepageConfig } from "../data/demoContent";
+import { firestoreDb, isFirebaseConfigured } from "./firebaseClient";
+import { readContentState, subscribeToContentChanges, updateContentState } from "./localDataStore";
 
 const COLLECTIONS = new Set(["categories", "photos", "videos", "blogs"]);
 
-function clone(value) {
-  if (typeof globalThis.structuredClone === "function") {
-    return globalThis.structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
+function ensureCollectionName(name) {
+  if (!COLLECTIONS.has(name)) throw new Error(`Unknown collection: ${name}`);
 }
 
-function ensureCollectionName(name) {
-  if (!COLLECTIONS.has(name)) {
-    throw new Error(`Unknown collection: ${name}`);
-  }
+function clone(value) {
+  return typeof globalThis.structuredClone === "function"
+    ? globalThis.structuredClone(value)
+    : JSON.parse(JSON.stringify(value));
+}
+
+function toIso(value) {
+  if (!value) return value;
+  if (typeof value.toDate === "function") return value.toDate().toISOString();
+  return value;
+}
+
+function normalizeDocument(snapshot) {
+  const value = snapshot.data();
+  return {
+    id: snapshot.id,
+    ...value,
+    createdAt: toIso(value.createdAt),
+    updatedAt: toIso(value.updatedAt),
+    publishedAt: toIso(value.publishedAt)
+  };
 }
 
 function sortByLatest(items) {
@@ -25,115 +55,147 @@ function sortByLatest(items) {
 }
 
 function sortPhotosForGallery(items) {
-  return [...items].sort((a, b) => {
-    const aFeatured = Boolean(a.featured);
-    const bFeatured = Boolean(b.featured);
-    if (aFeatured !== bFeatured) {
-      return aFeatured ? -1 : 1;
-    }
-
-    const ad = toDateValue(a.createdAt) || new Date(0);
-    const bd = toDateValue(b.createdAt) || new Date(0);
-    return bd - ad;
-  });
+  return sortByLatest(items);
 }
 
-function createId(name) {
-  const suffix = Math.random().toString(36).slice(2, 10);
-  return `${name}-${Date.now()}-${suffix}`;
-}
-
-function isoNow() {
-  return new Date().toISOString();
+function localCreateId(name) {
+  return `${name}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export async function listCollection(name) {
   ensureCollectionName(name);
-  const state = readContentState();
-  return clone(state.collections[name] || []);
+  if (!isFirebaseConfigured) return clone(readContentState().collections[name] || []);
+  const snapshot = await getDocs(collection(firestoreDb, name));
+  return snapshot.docs.map(normalizeDocument);
 }
 
 export async function createDocument(name, payload) {
   ensureCollectionName(name);
-  const now = isoNow();
-  const id = createId(name);
+  if (isFirebaseConfigured) {
+    const result = await addDoc(collection(firestoreDb, name), {
+      ...payload,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    return { id: result.id };
+  }
 
-  updateContentState(
-    (state) => {
-      const next = { ...state };
-      next.collections[name] = [...(state.collections[name] || []), { id, ...payload, createdAt: now, updatedAt: now }];
-      return next;
-    },
-    { action: "create", collection: name, id }
-  );
-
+  const id = localCreateId(name);
+  const now = new Date().toISOString();
+  updateContentState((state) => {
+    state.collections[name] = [...(state.collections[name] || []), { id, ...payload, createdAt: now, updatedAt: now }];
+    return state;
+  }, { action: "create", collection: name, id });
   return { id };
 }
 
 export async function updateDocument(name, id, payload) {
   ensureCollectionName(name);
-  const now = isoNow();
-
-  updateContentState(
-    (state) => {
-      const next = { ...state };
-      const rows = state.collections[name] || [];
-      next.collections[name] = rows.map((row) => (row.id === id ? { ...row, ...payload, updatedAt: now } : row));
-      return next;
-    },
-    { action: "update", collection: name, id }
-  );
+  if (isFirebaseConfigured) {
+    await updateDoc(doc(firestoreDb, name, id), { ...payload, updatedAt: serverTimestamp() });
+    return;
+  }
+  const now = new Date().toISOString();
+  updateContentState((state) => {
+    state.collections[name] = (state.collections[name] || []).map((row) =>
+      row.id === id ? { ...row, ...payload, updatedAt: now } : row
+    );
+    return state;
+  }, { action: "update", collection: name, id });
 }
 
 export async function removeDocument(name, id) {
   ensureCollectionName(name);
-
-  updateContentState(
-    (state) => {
-      const next = { ...state };
-      next.collections[name] = (state.collections[name] || []).filter((row) => row.id !== id);
-      return next;
-    },
-    { action: "delete", collection: name, id }
-  );
+  if (isFirebaseConfigured) {
+    await deleteDoc(doc(firestoreDb, name, id));
+    return;
+  }
+  updateContentState((state) => {
+    state.collections[name] = (state.collections[name] || []).filter((row) => row.id !== id);
+    return state;
+  }, { action: "delete", collection: name, id });
 }
 
 export async function getHomepageConfig() {
-  const state = readContentState();
-  return clone(state.homepageConfig || {});
+  if (!isFirebaseConfigured) return clone(readContentState().homepageConfig || demoHomepageConfig);
+  const snapshot = await getDoc(doc(firestoreDb, "siteConfig", "homepage"));
+  return snapshot.exists() ? { ...demoHomepageConfig, ...snapshot.data() } : clone(demoHomepageConfig);
 }
 
 export async function saveHomepageConfig(payload) {
-  updateContentState(
-    (state) => {
-      const next = { ...state };
-      next.homepageConfig = {
-        ...(state.homepageConfig || {}),
-        ...clone(payload),
-        updatedAt: isoNow()
-      };
-      return next;
-    },
-    { action: "save-homepage" }
-  );
+  if (isFirebaseConfigured) {
+    await setDoc(doc(firestoreDb, "siteConfig", "homepage"), { ...payload, updatedAt: serverTimestamp() }, { merge: true });
+    return;
+  }
+  updateContentState((state) => {
+    state.homepageConfig = { ...(state.homepageConfig || {}), ...clone(payload), updatedAt: new Date().toISOString() };
+    return state;
+  }, { action: "save-homepage" });
+}
+
+async function getPublished(name) {
+  if (!isFirebaseConfigured) {
+    const rows = await listCollection(name);
+    return rows.filter((item) => (item.status || "draft") === "published");
+  }
+  const snapshot = await getDocs(query(collection(firestoreDb, name), where("status", "==", "published")));
+  return snapshot.docs.map(normalizeDocument);
 }
 
 export async function getPublishedCategories() {
-  const categories = await listCollection("categories");
-  return categories.filter((item) => item.isActive !== false);
+  if (!isFirebaseConfigured) {
+    const rows = await listCollection("categories");
+    return rows.filter((item) => item.isActive !== false);
+  }
+  const snapshot = await getDocs(query(collection(firestoreDb, "categories"), where("isActive", "==", true)));
+  return snapshot.docs.map(normalizeDocument);
 }
 
 export async function getPublishedPhotos() {
-  const photos = await listCollection("photos");
-  return sortPhotosForGallery(photos.filter((photo) => (photo.status || "draft") === "published"));
+  return sortPhotosForGallery(await getPublished("photos"));
 }
 
 export async function getPublishedVideos() {
-  const videos = await listCollection("videos");
-  return sortByLatest(videos.filter((video) => (video.status || "draft") === "published"));
+  return sortByLatest(await getPublished("videos"));
 }
 
 export async function getPublishedBlogs() {
-  const blogs = await listCollection("blogs");
-  return sortByLatest(blogs.filter((blog) => (blog.status || "draft") === "published"));
+  return sortByLatest(await getPublished("blogs"));
+}
+
+function subscribeLocal(loader, callback, onError) {
+  let active = true;
+  const run = () => loader().then((rows) => active && callback(rows)).catch(onError);
+  run();
+  const unsubscribe = subscribeToContentChanges(run);
+  return () => {
+    active = false;
+    unsubscribe();
+  };
+}
+
+export function subscribeCollection(name, callback, onError = () => {}) {
+  ensureCollectionName(name);
+  if (!isFirebaseConfigured) return subscribeLocal(() => listCollection(name), callback, onError);
+  return onSnapshot(collection(firestoreDb, name), (snapshot) => callback(snapshot.docs.map(normalizeDocument)), onError);
+}
+
+export function subscribePublishedCollection(name, callback, onError = () => {}) {
+  ensureCollectionName(name);
+  if (!isFirebaseConfigured) return subscribeLocal(() => getPublished(name), callback, onError);
+  const publishedQuery = query(collection(firestoreDb, name), where("status", "==", "published"));
+  return onSnapshot(publishedQuery, (snapshot) => callback(snapshot.docs.map(normalizeDocument)), onError);
+}
+
+export function subscribePublishedCategories(callback, onError = () => {}) {
+  if (!isFirebaseConfigured) return subscribeLocal(getPublishedCategories, callback, onError);
+  const categoriesQuery = query(collection(firestoreDb, "categories"), where("isActive", "==", true));
+  return onSnapshot(categoriesQuery, (snapshot) => callback(snapshot.docs.map(normalizeDocument)), onError);
+}
+
+export function subscribeHomepageConfig(callback, onError = () => {}) {
+  if (!isFirebaseConfigured) return subscribeLocal(getHomepageConfig, callback, onError);
+  return onSnapshot(doc(firestoreDb, "siteConfig", "homepage"), (snapshot) => {
+    callback(snapshot.exists() ? { ...demoHomepageConfig, ...snapshot.data() } : clone(demoHomepageConfig));
+  }, onError);
 }

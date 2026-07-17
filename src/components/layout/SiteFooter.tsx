@@ -3,7 +3,7 @@
 export function SiteFooter() {
   return (
     <footer className="bg-[#0f0f0f] text-white">
-      <div className="section-shell grid gap-12 py-16 md:grid-cols-4">
+      <div className="section-shell grid gap-8 py-8 md:grid-cols-4 md:gap-6 lg:gap-8">
         <div>
           <p className="font-display text-2xl">Stories by Vamshe</p>
           <p className="mt-3 text-sm text-white/70">Luxury wedding and event storytelling through photographs and cinematic films.</p>

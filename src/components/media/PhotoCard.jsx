@@ -5,10 +5,10 @@ export function PhotoCard({ photo, showCaption = true, className = "" }) {
 
   return (
     <article className={cardClassName}>
-      <ResolvedImage src={photo.imageUrl} alt={photo.title || "Photography"} />
+      <ResolvedImage src={photo.imageUrl} alt={photo.title || `${photo.categoryName || "Gallery"} image`} />
       {showCaption && (
         <div className="photo-card__caption">
-          <h4>{photo.title || "Untitled Story"}</h4>
+          {photo.title && <h4>{photo.title}</h4>}
           <p>{photo.categoryName || "Category"}</p>
         </div>
       )}

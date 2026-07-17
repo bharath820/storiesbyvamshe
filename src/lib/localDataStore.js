@@ -78,6 +78,14 @@ function normalizeState(value) {
     }
   });
 
+  // Keep existing browser-local demo sites in sync when new starter blogs are added.
+  if (safeState.collections.blogs.some((blog) => blog.id === "blog-1")) {
+    const existingBlogIds = new Set(safeState.collections.blogs.map((blog) => blog.id));
+    safeState.collections.blogs.push(
+      ...clone(demoBlogs).filter((blog) => !existingBlogIds.has(blog.id))
+    );
+  }
+
   if (isPlainObject(value.homepageConfig)) {
     safeState.homepageConfig = clone(value.homepageConfig);
   }

@@ -1,64 +1,79 @@
 import { useEffect, useState } from "react";
-import {
-  createDocument,
-  listCollection,
-  removeDocument,
-  updateDocument
-} from "../../lib/firestoreService";
-import { uploadAsset } from "../../lib/storageService";
+import { ImageDropZone } from "../../components/admin/ImageDropZone";
+import { ResolvedImage } from "../../components/media/ResolvedImage";
+import { createDocument, removeDocument, subscribeCollection, updateDocument } from "../../lib/firestoreService";
+import { deleteStoredAsset, uploadAsset } from "../../lib/storageService";
 import { slugify } from "../../utils/slugify";
 
-const initialForm = {
-  title: "",
-  slug: "",
-  excerpt: "",
-  body: "",
-  coverImage: "",
-  status: "published"
-};
+const initialForm = { title: "", slug: "", excerpt: "", body: "", status: "published" };
 
 export function AdminBlogsPage() {
   const [rows, setRows] = useState([]);
   const [form, setForm] = useState(initialForm);
-  const [imageFile, setImageFile] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
   const [actionError, setActionError] = useState("");
 
-  async function load() {
-    const blogs = await listCollection("blogs");
-    setRows(blogs);
+  useEffect(() => subscribeCollection("blogs", setRows, (error) => setActionError(error.message)), []);
+  useEffect(() => () => coverPreview && URL.revokeObjectURL(coverPreview), [coverPreview]);
+
+  function selectCover(files) {
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverFile(files[0]);
+    setCoverPreview(URL.createObjectURL(files[0]));
   }
 
-  useEffect(() => {
-    load();
-  }, []);
+  function clearCover() {
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverFile(null);
+    setCoverPreview("");
+  }
 
   async function submit(event) {
     event.preventDefault();
+    if (!form.title.trim() || !form.body.trim()) {
+      setActionError("Blog title and body are required.");
+      return;
+    }
     setLoading(true);
+    setActionError("");
+    let asset;
     try {
-      let coverImage = form.coverImage.trim();
-      if (imageFile) {
-        coverImage = await uploadAsset(imageFile, "blogs");
-      }
-
+      if (coverFile) asset = await uploadAsset(coverFile, "blogs");
       await createDocument("blogs", {
-        title: form.title,
-        slug: form.slug || slugify(form.title),
-        excerpt: form.excerpt,
-        body: form.body,
-        coverImage,
-        status: form.status,
+        ...form,
+        title: form.title.trim(),
+        slug: form.slug.trim() || slugify(form.title),
+        excerpt: form.excerpt.trim(),
+        body: form.body.trim(),
+        coverImage: asset?.imageUrl || "",
+        storagePath: asset?.storagePath || "",
         publishedAt: new Date().toISOString()
       });
       setForm(initialForm);
-      setImageFile(null);
-      setActionError("");
-      await load();
+      clearCover();
     } catch (error) {
+      if (asset?.storagePath) deleteStoredAsset(asset.storagePath).catch(() => {});
       setActionError(error.message || "Could not save blog.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function deleteBlog(blog) {
+    setDeletingId(blog.id);
+    setActionError("");
+    try {
+      await removeDocument("blogs", blog.id);
+      await deleteStoredAsset(blog.storagePath).catch(() => {
+        setActionError("Blog was deleted, but its cover file could not be cleaned up.");
+      });
+    } catch (error) {
+      setActionError(error.message || "Could not delete blog.");
+    } finally {
+      setDeletingId("");
     }
   }
 
@@ -66,89 +81,35 @@ export function AdminBlogsPage() {
     <div>
       <h1>VBlogs</h1>
       <form onSubmit={submit} className="admin-form-stack">
-        <input
-          className="input"
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
-        />
-        <input
-          className="input"
-          placeholder="Slug (optional)"
-          value={form.slug}
-          onChange={(e) => setForm((s) => ({ ...s, slug: e.target.value }))}
-        />
-        <input
-          className="input"
-          placeholder="Excerpt"
-          value={form.excerpt}
-          onChange={(e) => setForm((s) => ({ ...s, excerpt: e.target.value }))}
-        />
-        <textarea
-          className="textarea"
-          rows={8}
-          placeholder="Body content"
-          value={form.body}
-          onChange={(e) => setForm((s) => ({ ...s, body: e.target.value }))}
-        />
-        <div className="grid-2">
-          <input
-            className="input"
-            placeholder="Cover image URL"
-            value={form.coverImage}
-            onChange={(e) => setForm((s) => ({ ...s, coverImage: e.target.value }))}
-          />
-          <label className="field">
-            <span>Preview local cover image (max 5MB)</span>
-            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
-          </label>
-        </div>
-        <select
-          className="select"
-          value={form.status}
-          onChange={(e) => setForm((s) => ({ ...s, status: e.target.value }))}
-        >
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
+        <input className="input" placeholder="Title" value={form.title} onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))} />
+        <input className="input" placeholder="Slug (optional)" value={form.slug} onChange={(e) => setForm((s) => ({ ...s, slug: e.target.value }))} />
+        <input className="input" placeholder="Excerpt" value={form.excerpt} onChange={(e) => setForm((s) => ({ ...s, excerpt: e.target.value }))} />
+        <textarea className="textarea" rows={8} placeholder="Body content" value={form.body} onChange={(e) => setForm((s) => ({ ...s, body: e.target.value }))} />
+        {coverPreview ? (
+          <div className="selected-image-preview">
+            <img src={coverPreview} alt="Selected blog cover" />
+            <button className="btn btn-danger" type="button" onClick={clearCover}>Delete</button>
+          </div>
+        ) : <ImageDropZone onFiles={selectCover} disabled={loading} label="Drag and drop a blog cover" />}
+        <select className="select" value={form.status} onChange={(e) => setForm((s) => ({ ...s, status: e.target.value }))}>
+          <option value="published">Published</option><option value="draft">Draft</option>
         </select>
         {actionError && <p className="error-text">{actionError}</p>}
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Add Blog"}
-        </button>
+        <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? "Saving..." : "Add Blog"}</button>
       </form>
 
       <div className="admin-list">
         {rows.map((blog) => (
           <article key={blog.id} className="admin-list-item">
-            <div>
-              <strong>{blog.title}</strong>
-              <p>{blog.status}</p>
+            <div className="admin-gallery-item">
+              {blog.coverImage && <ResolvedImage src={blog.coverImage} alt="" className="admin-gallery-thumb" />}
+              <div><strong>{blog.title}</strong><p>{blog.status}</p></div>
             </div>
             <div className="admin-actions">
-              <button
-                className="btn btn-soft"
-                type="button"
-                onClick={() =>
-                  updateDocument("blogs", blog.id, {
-                    status: blog.status === "published" ? "draft" : "published"
-                  })
-                    .then(load)
-                    .catch((error) => setActionError(error.message || "Could not update blog status."))
-                }
-              >
+              <button className="btn btn-soft" type="button" onClick={() => updateDocument("blogs", blog.id, { status: blog.status === "published" ? "draft" : "published" }).catch((e) => setActionError(e.message))}>
                 {blog.status === "published" ? "Move to Draft" : "Publish"}
               </button>
-              <button
-                type="button"
-                className="btn btn-soft"
-                onClick={() =>
-                  removeDocument("blogs", blog.id)
-                    .then(load)
-                    .catch((error) => setActionError(error.message || "Could not delete blog."))
-                }
-              >
-                Delete
-              </button>
+              <button className="btn btn-danger" type="button" disabled={deletingId === blog.id} onClick={() => deleteBlog(blog)}>{deletingId === blog.id ? "Deleting..." : "Delete"}</button>
             </div>
           </article>
         ))}

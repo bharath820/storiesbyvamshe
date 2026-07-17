@@ -2,6 +2,15 @@
 import { motion } from 'framer-motion';
 import { categories, featuredStories, hero, instagram, stats, testimonials } from '../data/homeContent';
 import type { Category } from '../types/home';
+import { subscribeHomepageConfig } from '../lib/firestoreService';
+
+type HomepageMedia = {
+  id?: string;
+  imageUrl: string;
+  title?: string;
+  subtitle?: string;
+  kicker?: string;
+};
 
 const reveal = {
   hidden: { opacity: 0, y: 32 },
@@ -30,6 +39,11 @@ function Icon({ name }: { name: string }) {
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState<Category>('All');
   const [slide, setSlide] = useState(0);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [homepageMedia, setHomepageMedia] = useState<{ heroSlides: HomepageMedia[]; contentImages: HomepageMedia[] }>({
+    heroSlides: [],
+    contentImages: []
+  });
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -37,6 +51,17 @@ export function HomePage() {
     }, 3800);
     return () => window.clearInterval(id);
   }, []);
+
+  useEffect(() => subscribeHomepageConfig((config: { heroSlides?: HomepageMedia[]; contentImages?: HomepageMedia[] }) => {
+    setHomepageMedia({ heroSlides: config.heroSlides || [], contentImages: config.contentImages || [] });
+    setHeroIndex(0);
+  }), []);
+
+  useEffect(() => {
+    if (homepageMedia.heroSlides.length < 2) return undefined;
+    const id = window.setInterval(() => setHeroIndex((index) => (index + 1) % homepageMedia.heroSlides.length), 5000);
+    return () => window.clearInterval(id);
+  }, [homepageMedia.heroSlides.length]);
 
   const filteredStories = useMemo(
     () => featuredStories.filter((item) => activeCategory === 'All' || item.category === activeCategory),
@@ -48,19 +73,28 @@ export function HomePage() {
     testimonials[(slide + 1) % testimonials.length],
     testimonials[(slide + 2) % testimonials.length]
   ];
+  const activeHero = homepageMedia.heroSlides[heroIndex];
+  const dynamicStories = homepageMedia.contentImages.filter((item) => item.imageUrl);
+  const homepageStories = dynamicStories.length
+    ? dynamicStories.map((item, index) => ({
+        id: item.id || `homepage-${index}`,
+        image: item.imageUrl,
+        alt: `Homepage gallery image ${index + 1}`,
+        size: 'regular',
+        category: ''
+      }))
+    : filteredStories;
 
   return (
     <div className="bg-brandBg">
-      <section className="section-shell grid min-h-[96svh] items-center gap-12 pb-16 pt-28 lg:grid-cols-2">
-        <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={reveal} transition={{ duration: 0.8 }}>
-          <p className="gold-kicker mb-6">CAPTURING MOMENTS</p>
+      <section className="section-shell grid min-h-[96svh] items-center gap-10 overflow-hidden py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+        <motion.div className="min-w-0" initial="hidden" whileInView="show" viewport={{ once: true }} variants={reveal} transition={{ duration: 0.8 }}>
+          <p className="gold-kicker mb-6">{activeHero?.kicker || 'CAPTURING MOMENTS'}</p>
           <h1 className="font-display text-5xl leading-[0.98] text-brandText sm:text-6xl lg:text-7xl">
-            Creating Memories
-            <br />
-            That Last Forever
+            {activeHero?.title || <>Creating Memories<br />That Last Forever</>}
           </h1>
           <p className="mt-6 max-w-xl text-sm leading-7 text-brandSubtext sm:text-base">
-            Weddings • Pre-Weddings • Baby Shoots<br />Maternity • Events • Cinematic Films
+            {activeHero?.subtitle || <>Weddings • Pre-Weddings • Baby Shoots<br />Maternity • Events • Cinematic Films</>}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <button className="rounded-full bg-brandText px-7 py-3 text-sm text-white transition hover:-translate-y-0.5 hover:bg-black">View Portfolio</button>
@@ -72,14 +106,12 @@ export function HomePage() {
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
-          className="relative"
+          className="relative min-w-0 overflow-hidden rounded-[32px] bg-[#F8F4EE] shadow-soft"
         >
           <motion.img
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-            src={hero.image}
-            alt={hero.alt}
-            className="h-[76svh] w-full rounded-[32px] object-cover shadow-soft"
+            src={activeHero?.imageUrl || hero.image}
+            alt={activeHero?.title || hero.alt}
+            className="mx-auto h-[58svh] min-h-[360px] max-h-[680px] w-full object-contain sm:h-[68svh] lg:h-[76svh]"
           />
           <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-gradient-to-t from-black/10 to-transparent" />
         </motion.div>
@@ -115,11 +147,11 @@ export function HomePage() {
       <section className="section-shell py-14">
         <motion.h2 initial="hidden" whileInView="show" viewport={{ once: true }} variants={reveal} transition={{ duration: 0.6 }} className="font-display text-4xl sm:text-5xl">A Glimpse Of Our Work</motion.h2>
         <div className="mt-8 columns-1 gap-5 sm:columns-2 lg:columns-3">
-          {filteredStories.map((story) => (
+          {homepageStories.map((story) => (
             <motion.article key={story.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="group relative mb-5 overflow-hidden rounded-3xl">
               <img src={story.image} alt={story.alt} className={`w-full object-cover transition duration-700 group-hover:scale-[1.06] ${story.size === 'tall' ? 'h-[30rem]' : story.size === 'wide' ? 'h-[19rem]' : 'h-[23rem]'}`} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
-              <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs text-black">{story.category}</span>
+              {story.category && <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs text-black">{story.category}</span>}
               <button className="absolute bottom-5 left-5 rounded-full border border-white/70 bg-white/10 px-4 py-2 text-xs text-white opacity-0 backdrop-blur transition group-hover:opacity-100">View Story</button>
             </motion.article>
           ))}
@@ -191,10 +223,26 @@ export function HomePage() {
       <section className="section-shell py-14">
         <h3 className="font-display text-4xl">Follow Our Journey</h3>
         <p className="mt-2 text-sm text-brandSubtext">@storiesbyvamshe</p>
-        <div className="mt-6 flex gap-3 overflow-x-auto pb-2">
-          {instagram.map((item) => (
-            <img key={item.id} src={item.image} alt={item.alt} className="h-48 w-40 shrink-0 rounded-2xl object-cover transition duration-500 hover:scale-[1.04] sm:h-56 sm:w-48" />
-          ))}
+        <div className="journey-strip mt-6" aria-label="Recent Stories by Vamshe photographs">
+          <div className="journey-strip__track">
+            {[false, true].map((isDuplicate) => (
+              <div
+                key={isDuplicate ? 'duplicate' : 'original'}
+                className="journey-strip__set"
+                aria-hidden={isDuplicate ? 'true' : undefined}
+              >
+                {instagram.map((item) => (
+                  <img
+                    key={`${item.id}-${isDuplicate ? 'duplicate' : 'original'}`}
+                    src={item.image}
+                    alt={isDuplicate ? '' : item.alt}
+                    loading="lazy"
+                    className="h-48 w-40 shrink-0 rounded-2xl object-cover transition duration-500 hover:scale-[1.04] sm:h-56 sm:w-48"
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
         <button className="mt-6 rounded-full border border-brandText px-6 py-3 text-sm hover:bg-brandText hover:text-white">Follow On Instagram</button>
       </section>

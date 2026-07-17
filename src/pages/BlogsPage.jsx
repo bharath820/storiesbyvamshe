@@ -1,31 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ResolvedImage } from "../components/media/ResolvedImage";
-import { getPublishedBlogs } from "../lib/firestoreService";
-import { subscribeToContentChanges } from "../lib/localDataStore";
+import { subscribePublishedCollection } from "../lib/firestoreService";
 import { prettyDate } from "../utils/format";
 
 export function BlogsPage() {
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const rows = await getPublishedBlogs();
-      if (!isActive) return;
-      setBlogs(rows);
-    }
-
-    load().catch(() => {});
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
+    return subscribePublishedCollection("blogs", (rows) => {
+      setBlogs([...rows].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""))));
     });
-
-    return () => {
-      isActive = false;
-      unsubscribe();
-    };
   }, []);
 
   return (
@@ -34,7 +19,7 @@ export function BlogsPage() {
         <h1 className="section-title">VBlogs</h1>
         <p className="section-subtitle">Stories, event insights, and cinematic photography journals.</p>
         <div className="blog-grid">
-          {blogs.map((blog) => (
+          {blogs.slice(0, 8).map((blog) => (
             <article key={blog.id} className="blog-card">
               {blog.coverImage && <ResolvedImage src={blog.coverImage} alt={blog.title} />}
               <div className="blog-card__body">

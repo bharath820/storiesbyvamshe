@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { getPublishedPhotos } from "../lib/firestoreService";
+import { subscribePublishedCollection } from "../lib/firestoreService";
 import { resolveAssetUrl } from "../lib/assetUrlService";
-import { subscribeToContentChanges } from "../lib/localDataStore";
 
 const ABOUT_FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
@@ -40,26 +39,7 @@ export function AboutPage() {
   const [resolvedPool, setResolvedPool] = useState([]);
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const rows = await getPublishedPhotos();
-      if (!isActive) return;
-      setPhotos(rows);
-    }
-
-    load().catch(() => {
-      if (isActive) setPhotos([]);
-    });
-
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
-    });
-
-    return () => {
-      isActive = false;
-      unsubscribe();
-    };
+    return subscribePublishedCollection("photos", setPhotos, () => setPhotos([]));
   }, []);
 
   const imagePool = useMemo(() => createImagePool(photos), [photos]);

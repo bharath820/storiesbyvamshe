@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { logoutAdmin } from "../../lib/auth";
+import { isFirebaseConfigured } from "../../lib/firebaseClient";
 
 const links = [
   { to: "/admin", label: "Overview", end: true },
@@ -33,6 +34,7 @@ export function AdminLayout() {
       </aside>
 
       <section className="admin-main">
+        {!isFirebaseConfigured && <div className="setup-banner setup-banner--admin"><strong>Local demo mode</strong><p>Add the Firebase environment variables before publishing. Changes currently stay in this browser only.</p></div>}
         <Outlet />
       </section>
     </div>

@@ -1,68 +1,74 @@
 import { useEffect, useMemo, useState } from "react";
 import { CategoryTabs } from "../components/filters/CategoryTabs";
-import { SearchBox } from "../components/filters/SearchBox";
 import { MasonryGrid } from "../components/media/MasonryGrid";
 import { PhotoCard } from "../components/media/PhotoCard";
 import { usePaginatedSlice } from "../hooks/usePaginatedSlice";
-import { getPublishedCategories, getPublishedPhotos } from "../lib/firestoreService";
-import { subscribeToContentChanges } from "../lib/localDataStore";
+import { subscribePublishedCategories, subscribePublishedCollection } from "../lib/firestoreService";
+
+const GALLERY_CATEGORY_ORDER = ["wedding", "prewedding", "engagement", "birthday", "babyshoot", "portraits"];
+
+function normalizeCategoryName(category) {
+  return String(category.slug || category.name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
 
 export function GalleryPage() {
   const [categories, setCategories] = useState([]);
   const [photos, setPhotos] = useState([]);
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("");
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const [categoryRows, photoRows] = await Promise.all([getPublishedCategories(), getPublishedPhotos()]);
-      if (!isActive) return;
-      const catMap = new Map(categoryRows.map((c) => [c.id, c.name]));
-      setCategories(categoryRows);
+    let categoryRows = [];
+    let photoRows = [];
+    const sync = () => {
+      const galleryCategories = categoryRows
+        .filter((category) => GALLERY_CATEGORY_ORDER.includes(normalizeCategoryName(category)))
+        .sort(
+          (a, b) =>
+            GALLERY_CATEGORY_ORDER.indexOf(normalizeCategoryName(a)) -
+            GALLERY_CATEGORY_ORDER.indexOf(normalizeCategoryName(b))
+        );
+      const catMap = new Map(galleryCategories.map((category) => [category.id, category.name]));
+      setCategories(galleryCategories);
       setPhotos(
-        photoRows.map((photo) => ({
-          ...photo,
-          categoryName: catMap.get(photo.categoryId) || "General"
-        }))
+        [...photoRows]
+          .filter((photo) => catMap.has(photo.categoryId))
+          .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")))
+          .map((photo) => ({ ...photo, categoryName: catMap.get(photo.categoryId) }))
       );
-    }
-
-    load().catch(() => {});
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
-    });
-
+    };
+    const stopCategories = subscribePublishedCategories((rows) => { categoryRows = rows; sync(); });
+    const stopPhotos = subscribePublishedCollection("photos", (rows) => { photoRows = rows; sync(); });
     return () => {
-      isActive = false;
-      unsubscribe();
+      stopCategories();
+      stopPhotos();
     };
   }, []);
 
+  useEffect(() => {
+    if (!categories.some((category) => category.id === activeCategory)) {
+      setActiveCategory(categories[0]?.id || "");
+    }
+  }, [categories, activeCategory]);
+
   const filtered = useMemo(() => {
-    return photos.filter((photo) => {
-      const categoryMatch = activeCategory === "all" ? true : photo.categoryId === activeCategory;
-      const text = `${photo.title || ""} ${photo.categoryName || ""}`.toLowerCase();
-      const searchMatch = text.includes(search.toLowerCase());
-      return categoryMatch && searchMatch;
-    });
-  }, [photos, activeCategory, search]);
+    return photos.filter((photo) => photo.categoryId === activeCategory);
+  }, [photos, activeCategory]);
 
   const { visible, hasMore, loadMore, reset } = usePaginatedSlice(filtered, 12);
 
   useEffect(() => {
     reset();
-  }, [activeCategory, search, reset]);
+  }, [activeCategory, reset]);
 
   return (
     <section className="section">
       <div className="container">
         <h1 className="section-title">Gallery</h1>
         <p className="section-subtitle">Browse category-wise photo stories with aligned masonry cards.</p>
-        <div className="filters-row">
-          <CategoryTabs categories={categories} active={activeCategory} onChange={setActiveCategory} allowAll />
-          <SearchBox value={search} onChange={setSearch} placeholder="Search by title or category..." />
+        <div className="filters-row filters-row--gallery">
+          <CategoryTabs categories={categories} active={activeCategory} onChange={setActiveCategory} allowAll={false} />
         </div>
         <MasonryGrid>
           {visible.map((photo) => (

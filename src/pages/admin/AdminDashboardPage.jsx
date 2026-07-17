@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { listCollection } from "../../lib/firestoreService";
-import { subscribeToContentChanges } from "../../lib/localDataStore";
+import { subscribeCollection } from "../../lib/firestoreService";
+
+const DASHBOARD_COLLECTIONS = ["categories", "photos", "videos", "blogs"];
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState({
@@ -11,33 +12,10 @@ export function AdminDashboardPage() {
   });
 
   useEffect(() => {
-    let isActive = true;
-
-    async function load() {
-      const [categories, photos, videos, blogs] = await Promise.all([
-        listCollection("categories"),
-        listCollection("photos"),
-        listCollection("videos"),
-        listCollection("blogs")
-      ]);
-      if (!isActive) return;
-      setStats({
-        categories: categories.length,
-        photos: photos.length,
-        videos: videos.length,
-        blogs: blogs.length
-      });
-    }
-
-    load().catch(() => {});
-    const unsubscribe = subscribeToContentChanges(() => {
-      load().catch(() => {});
-    });
-
-    return () => {
-      isActive = false;
-      unsubscribe();
-    };
+    const stops = DASHBOARD_COLLECTIONS.map((name) => subscribeCollection(name, (rows) => {
+      setStats((current) => ({ ...current, [name]: rows.length }));
+    }));
+    return () => stops.forEach((stop) => stop());
   }, []);
 
   return (

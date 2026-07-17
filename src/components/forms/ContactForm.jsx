@@ -8,6 +8,7 @@ const initialValues = {
   email: "",
   eventType: "",
   eventDate: "",
+  venue: "",
   message: ""
 };
 
@@ -53,34 +54,42 @@ export function ContactForm() {
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
-      <div className="grid-2">
+      <div className="contact-form__grid">
         <label className="field">
-          <span>Name</span>
+          <span>Full name <em>*</em></span>
           <input
             className="input"
+            name="name"
+            autoComplete="name"
             value={values.name}
             onChange={(e) => updateField("name", e.target.value)}
-            placeholder="Your full name"
+            placeholder="How should we address you?"
           />
           {errors.name && <small className="error-text">{errors.name}</small>}
         </label>
         <label className="field">
-          <span>Phone</span>
+          <span>Phone number <em>*</em></span>
           <input
+            type="tel"
             className="input"
+            name="phone"
+            autoComplete="tel"
             value={values.phone}
             onChange={(e) => updateField("phone", e.target.value)}
-            placeholder="Phone number"
+            placeholder="+91 98765 43210"
           />
           {errors.phone && <small className="error-text">{errors.phone}</small>}
         </label>
       </div>
 
-      <div className="grid-2">
+      <div className="contact-form__grid">
         <label className="field">
-          <span>Email</span>
+          <span>Email address <em>*</em></span>
           <input
+            type="email"
             className="input"
+            name="email"
+            autoComplete="email"
             value={values.email}
             onChange={(e) => updateField("email", e.target.value)}
             placeholder="name@email.com"
@@ -88,13 +97,13 @@ export function ContactForm() {
           {errors.email && <small className="error-text">{errors.email}</small>}
         </label>
         <label className="field">
-          <span>Event Type</span>
+          <span>Type of event <em>*</em></span>
           <select
             className="select"
             value={values.eventType}
             onChange={(e) => updateField("eventType", e.target.value)}
           >
-            <option value="">Select event</option>
+            <option value="">Choose your celebration</option>
             <option>Wedding</option>
             <option>Pre-Wedding</option>
             <option>Birthday</option>
@@ -105,34 +114,52 @@ export function ContactForm() {
         </label>
       </div>
 
-      <label className="field">
-        <span>Event Date</span>
-        <input
-          type="date"
-          className="input"
-          value={values.eventDate}
-          onChange={(e) => updateField("eventDate", e.target.value)}
-        />
-      </label>
+      <div className="contact-form__grid">
+        <label className="field">
+          <span>Event date</span>
+          <input
+            type="date"
+            className="input"
+            name="eventDate"
+            value={values.eventDate}
+            onChange={(e) => updateField("eventDate", e.target.value)}
+          />
+        </label>
+        <label className="field">
+          <span>Venue / city</span>
+          <input
+            className="input"
+            name="venue"
+            autoComplete="address-level2"
+            value={values.venue}
+            onChange={(e) => updateField("venue", e.target.value)}
+            placeholder="Where is it happening?"
+          />
+        </label>
+      </div>
 
       <label className="field">
-        <span>Message</span>
+        <span>Tell us your vision <em>*</em></span>
         <textarea
-          rows={6}
+          rows={5}
           className="textarea"
           value={values.message}
           onChange={(e) => updateField("message", e.target.value)}
-          placeholder="Tell us about your event, venue, and expectations..."
+          placeholder="What are you celebrating? Share the mood, guest count, or anything meaningful to you..."
         />
         {errors.message && <small className="error-text">{errors.message}</small>}
       </label>
 
-      {errors.form && <p className="error-text">{errors.form}</p>}
-      {done && <p className="ok-text">Inquiry sent successfully. Our team will contact you shortly.</p>}
+      {errors.form && <p className="form-notice form-notice--error" role="alert">{errors.form}</p>}
+      {done && <p className="form-notice form-notice--success" role="status">Thank you! Your story is now in our inbox. We’ll be in touch shortly.</p>}
 
-      <button type="submit" className="btn btn-primary" disabled={loading}>
-        {loading ? "Sending..." : "Send Inquiry"}
-      </button>
+      <div className="contact-form__footer">
+        <p><span aria-hidden="true">✦</span> Your details remain private and are only used to respond to your inquiry.</p>
+        <button type="submit" className="contact-submit" disabled={loading}>
+          <span>{loading ? "Sending..." : "Send my inquiry"}</span>
+          {!loading && <span aria-hidden="true">↗</span>}
+        </button>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DUMMY_ADMIN_EMAIL, DUMMY_ADMIN_PASSWORD, loginAdmin } from "../../lib/auth";
+import { isFirebaseConfigured } from "../../lib/firebaseClient";
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
@@ -27,16 +28,16 @@ export function AdminLoginPage() {
     <section className="admin-login-wrap">
       <form className="admin-login-card" onSubmit={handleSubmit}>
         <h1>Admin Login</h1>
-        <p className="section-subtitle">
-          Use <strong>{DUMMY_ADMIN_EMAIL}</strong> and <strong>{DUMMY_ADMIN_PASSWORD}</strong>
-        </p>
+        <p className="section-subtitle">{isFirebaseConfigured
+          ? "Sign in with the admin account created in Firebase Authentication."
+          : <>Demo mode: use <strong>{DUMMY_ADMIN_EMAIL}</strong> and <strong>{DUMMY_ADMIN_PASSWORD}</strong></>}</p>
         <label className="field">
           <span>Email</span>
           <input
             className="input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder={DUMMY_ADMIN_EMAIL}
+            placeholder={isFirebaseConfigured ? "admin@example.com" : DUMMY_ADMIN_EMAIL}
           />
         </label>
         <label className="field">
