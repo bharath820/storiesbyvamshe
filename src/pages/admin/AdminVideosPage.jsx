@@ -37,7 +37,7 @@ export function AdminVideosPage() {
   async function submit(event) {
     event.preventDefault();
     if (!form.title.trim() || !form.mediaUrl.trim()) {
-      setActionError("Video title and embed URL are required.");
+      setActionError("Video title and URL are required.");
       return;
     }
     setLoading(true); setActionError("");
@@ -75,7 +75,7 @@ export function AdminVideosPage() {
             <option value="">Select Category</option>{videoCategories.map((c) => <option value={c.id} key={c.id}>{c.name}</option>)}
           </select>
         </div>
-        <input className="input" placeholder="YouTube or Vimeo embed URL" value={form.mediaUrl} onChange={(e) => setForm((s) => ({ ...s, mediaUrl: e.target.value }))} />
+        <input className="input" placeholder="YouTube or Vimeo video URL" value={form.mediaUrl} onChange={(e) => setForm((s) => ({ ...s, mediaUrl: e.target.value }))} />
         {thumbnailPreview ? (
           <div className="selected-image-preview"><img src={thumbnailPreview} alt="Selected video thumbnail" /><button className="btn btn-danger" type="button" onClick={clearThumbnail}>Delete</button></div>
         ) : <ImageDropZone onFiles={selectThumbnail} disabled={loading} label="Drag and drop an optional video thumbnail" />}
@@ -97,4 +97,3 @@ export function AdminVideosPage() {
     </div>
   );
 }
-

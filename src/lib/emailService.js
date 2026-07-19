@@ -1,4 +1,6 @@
 import emailjs from "@emailjs/browser";
+import { httpsCallable } from "firebase/functions";
+import { firebaseFunctions, isFirebaseConfigured } from "./firebaseClient";
 
 function getConfig() {
   return {
@@ -11,6 +13,20 @@ function getConfig() {
 
 export async function sendContactEmail(values) {
   const config = getConfig();
+  const hasCallableContactForm = isFirebaseConfigured && firebaseFunctions;
+
+  if (hasCallableContactForm) {
+    const sendContactInquiry = httpsCallable(firebaseFunctions, "sendContactInquiry");
+    const result = await sendContactInquiry({
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      subject: values.subject,
+      message: values.message
+    });
+    return result.data;
+  }
+
   const hasEmailJsConfig = config.serviceId && config.templateId && config.publicKey;
 
   if (hasEmailJsConfig) {
@@ -21,24 +37,23 @@ export async function sendContactEmail(values) {
         from_name: values.name,
         from_email: values.email,
         phone: values.phone,
-        event_type: values.eventType,
-        event_date: values.eventDate,
-        venue: values.venue,
+        subject: values.subject,
+        event_type: values.eventType || values.subject,
+        event_date: values.eventDate || "",
+        venue: values.venue || "",
         message: values.message
       },
       { publicKey: config.publicKey }
     );
   }
 
-  const subject = encodeURIComponent(`New Photography Inquiry from ${values.name}`);
+  const subject = encodeURIComponent(values.subject || `New Photography Inquiry from ${values.name}`);
   const body = encodeURIComponent(
     [
       `Name: ${values.name}`,
       `Email: ${values.email}`,
       `Phone: ${values.phone}`,
-      `Event Type: ${values.eventType}`,
-      `Event Date: ${values.eventDate || "Not shared"}`,
-      `Venue / City: ${values.venue || "Not shared"}`,
+      `Subject: ${values.subject || "Not shared"}`,
       "",
       values.message
     ].join("\n")

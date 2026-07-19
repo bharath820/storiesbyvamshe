@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -21,8 +22,9 @@ export const isFirebaseConfigured = Boolean(
 );
 
 const app = isFirebaseConfigured ? (getApps().length ? getApp() : initializeApp(firebaseConfig)) : null;
+const functionsRegion = import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || "asia-south1";
 
 export const firebaseAuth = app ? getAuth(app) : null;
 export const firestoreDb = app ? getFirestore(app) : null;
+export const firebaseFunctions = app ? getFunctions(app, functionsRegion) : null;
 export const firebaseStorage = app ? getStorage(app) : null;
-

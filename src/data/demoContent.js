@@ -118,8 +118,8 @@ export const demoPhotos = [
   },
   {
     id: "photo-8",
-    title: "Portrait Light",
-    categoryId: categoryIdFor("portraits"),
+    title: "Haldhi Ceremony",
+    categoryId: categoryIdFor("haldhi"),
     imageUrl:
       "https://images.unsplash.com/photo-1506863530036-1efeddceb993?auto=format&fit=crop&w=900&q=80",
     status: "published",

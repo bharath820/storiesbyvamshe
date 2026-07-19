@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "node ./node_modules/eslint/bin/eslint.js . --ext js,jsx --max-warnings 0",
+    "functions:test": "npm --prefix functions test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

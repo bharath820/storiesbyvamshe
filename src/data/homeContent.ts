@@ -2,14 +2,15 @@
 
 export const categories = [
   'All',
-  'Wedding',
-  'Pre-Wedding',
   'Engagement',
+  'Pre-Wedding',
+  'Sangeeth',
+  'Haldhi',
+  'Wedding',
+  'Reception',
   'Birthday',
-  'Maternity',
   'Baby Shoot',
-  'Corporate Event',
-  'Portraits'
+  'Maternity'
 ] as const;
 
 export const hero: HomeHero = {
@@ -18,15 +19,15 @@ export const hero: HomeHero = {
 };
 
 export const featuredStories: GalleryItem[] = [
-  { id: 'w-1', title: 'Sacred Vows', category: 'Wedding', image: '/assets/home/wedding-1.jpg', alt: 'Wedding couple holding hands during ceremony', size: 'tall' },
-  { id: 'pw-1', title: 'Golden Hour Promise', category: 'Pre-Wedding', image: '/assets/home/prewedding-1.jpg', alt: 'Pre-wedding couple portrait outdoors', size: 'wide' },
   { id: 'e-1', title: 'Ring Story', category: 'Engagement', image: '/assets/home/engagement-1.jpg', alt: 'Engagement couple sharing candid moment', size: 'square' },
+  { id: 'pw-1', title: 'Golden Hour Promise', category: 'Pre-Wedding', image: '/assets/home/prewedding-1.jpg', alt: 'Pre-wedding couple portrait outdoors', size: 'wide' },
+  { id: 's-1', title: 'Sangeeth Night', category: 'Sangeeth', image: '/assets/home/corporate-1.jpg', alt: 'Celebration event photographed with warm stage lighting', size: 'tall' },
+  { id: 'h-1', title: 'Haldhi Ceremony', category: 'Haldhi', image: '/assets/home/wedding-1.jpg', alt: 'Wedding ritual detail captured in soft natural light', size: 'square' },
+  { id: 'w-1', title: 'Sacred Vows', category: 'Wedding', image: '/assets/home/wedding-1.jpg', alt: 'Wedding couple holding hands during ceremony', size: 'tall' },
+  { id: 'r-1', title: 'Reception Glow', category: 'Reception', image: '/assets/home/wedding-2.jpg', alt: 'Reception couple portrait with celebratory styling', size: 'wide' },
   { id: 'b-1', title: 'Joyful Birthday', category: 'Birthday', image: '/assets/home/birthday-1.jpg', alt: 'Birthday celebration with warm ambient lighting', size: 'wide' },
-  { id: 'm-1', title: 'New Chapter', category: 'Maternity', image: '/assets/home/maternity-1.jpg', alt: 'Maternity couple portrait with soft light', size: 'tall' },
   { id: 'bs-1', title: 'Tiny Smiles', category: 'Baby Shoot', image: '/assets/home/baby-1.jpg', alt: 'Baby portrait in warm studio lighting', size: 'square' },
-  { id: 'ce-1', title: 'Executive Moments', category: 'Corporate Event', image: '/assets/home/corporate-1.jpg', alt: 'Professional portrait in suit for corporate event', size: 'tall' },
-  { id: 'p-1', title: 'Signature Portrait', category: 'Portraits', image: '/assets/home/portrait-1.jpg', alt: 'Elegant studio portrait of a man in suit', size: 'wide' },
-  { id: 'w-2', title: 'Eternal Embrace', category: 'Wedding', image: '/assets/home/wedding-2.jpg', alt: 'Bride and groom smiling portrait', size: 'square' }
+  { id: 'm-1', title: 'Motherhood Glow', category: 'Maternity', image: '/assets/home/maternity-1.jpg', alt: 'Maternity portrait in warm natural light', size: 'tall' }
 ];
 
 export const stats: StatItem[] = [

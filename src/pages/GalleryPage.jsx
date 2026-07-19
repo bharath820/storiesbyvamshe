@@ -5,7 +5,16 @@ import { PhotoCard } from "../components/media/PhotoCard";
 import { usePaginatedSlice } from "../hooks/usePaginatedSlice";
 import { subscribePublishedCategories, subscribePublishedCollection } from "../lib/firestoreService";
 
-const GALLERY_CATEGORY_ORDER = ["wedding", "prewedding", "engagement", "birthday", "babyshoot", "portraits"];
+const GALLERY_CATEGORY_ORDER = [
+  "engagement",
+  "prewedding",
+  "sangeeth",
+  "haldhi",
+  "wedding",
+  "reception",
+  "birthday",
+  "babyshoot"
+];
 
 function normalizeCategoryName(category) {
   return String(category.slug || category.name || "")
@@ -63,10 +72,8 @@ export function GalleryPage() {
   }, [activeCategory, reset]);
 
   return (
-    <section className="section">
+    <section className="section gallery-page">
       <div className="container">
-        <h1 className="section-title">Gallery</h1>
-        <p className="section-subtitle">Browse category-wise photo stories with aligned masonry cards.</p>
         <div className="filters-row filters-row--gallery">
           <CategoryTabs categories={categories} active={activeCategory} onChange={setActiveCategory} allowAll={false} />
         </div>

@@ -1,13 +1,14 @@
 ﻿export type Category =
   | 'All'
-  | 'Wedding'
-  | 'Pre-Wedding'
   | 'Engagement'
+  | 'Pre-Wedding'
+  | 'Sangeeth'
+  | 'Haldhi'
+  | 'Wedding'
+  | 'Reception'
   | 'Birthday'
-  | 'Maternity'
   | 'Baby Shoot'
-  | 'Corporate Event'
-  | 'Portraits';
+  | 'Maternity';
 
 export interface HomeHero {
   image: string;

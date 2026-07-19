@@ -32,10 +32,8 @@ When Firebase is configured, public pages listen for published content in real t
 ## 3) Admin Login
 
 - URL: `/admin/login`
-- Use the Firebase Authentication user created during setup.
-- If Firebase is not configured, local demo credentials are `admin@stories.local` / `Admin@12345`.
-
-This is temporary and intentionally hardcoded for local/static mode.
+- Use the configured admin account in `src/lib/auth.js`.
+- When Firebase is configured, create that same email/password user in Firebase Authentication.
 
 ## 4) Demo Fallback
 
@@ -46,14 +44,48 @@ This is temporary and intentionally hardcoded for local/static mode.
 
 - Gallery photos support multi-image drag and drop and publish immediately.
 - Homepage images, blog covers, and video thumbnails use drag-and-drop uploads.
-- Images are limited to 5MB and stored in Firebase Storage when configured.
+- Images are limited to 40MB and stored in Firebase Storage when configured.
 - Videos:
   - Embed URL supported
   - Video file upload is disabled in static mode
 
-## 6) Contact Email Variables (Optional)
+## 6) Contact Inquiry Email
 
-Preferred (EmailJS):
+When Firebase is configured, the contact form calls the `sendContactInquiry` Firebase Cloud Function in `asia-south1`. The function saves the inquiry in Firestore and emails the official inbox.
+
+Install function dependencies:
+```bash
+npm --prefix functions install
+```
+
+Create `functions/.env` from `functions/.env.example` and fill the non-secret backend config:
+```bash
+cp functions/.env.example functions/.env
+```
+
+Default official recipients:
+- `CONTACT_TO_EMAIL=storiesbyvamshe9@gmail.com`
+
+Store private credentials with Firebase Secret Manager:
+```bash
+firebase functions:secrets:set GMAIL_APP_PASSWORD
+```
+
+Deploy the backend and rules:
+```bash
+firebase deploy --only functions,firestore:rules
+```
+
+Run function tests:
+```bash
+npm run functions:test
+```
+
+Firebase Cloud Functions requires the Blaze/pay-as-you-go plan.
+
+Local/demo fallback remains available when Firebase is not configured.
+
+Preferred fallback (EmailJS):
 - `VITE_EMAILJS_SERVICE_ID`
 - `VITE_EMAILJS_TEMPLATE_ID`
 - `VITE_EMAILJS_PUBLIC_KEY`
