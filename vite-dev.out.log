@@ -2,54 +2,16 @@
 > storiesbyvamshe-photography@1.0.0 dev
 > vite --host 127.0.0.1 --port 5173
 
-Port 5173 is in use, trying another one...
 
-  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m398[22m[2m[0m ms[22m
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m390[22m[2m[0m ms[22m
 
-  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5174[22m/[39m
-[2m12:07:33[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:07:44[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:08:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:12:27[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:12:37[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:14:48[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:14:56[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HomePage.tsx, /src/styles/tailwind.css[22m
-[2m12:15:27[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:17:59[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/HomePage.tsx, /src/styles/tailwind.css[22m
-[2m12:18:06[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:23:18[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ContactPage.jsx, /src/styles/tailwind.css[22m
-[2m12:23:31[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ContactPage.jsx, /src/styles/tailwind.css[22m
-[2m12:23:39[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/forms/ContactForm.jsx, /src/styles/tailwind.css[22m
-[2m12:24:06[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/forms/ContactForm.jsx, /src/styles/tailwind.css[22m
-[2m12:24:27[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/lib/emailService.js[22m
-[2m12:25:49[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:26:40[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:29:14[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:30:00[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:30:50[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:32:28[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:32:36[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m12:35:26[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
-[2m12:35:26[22m [36m[1m[vite][22m[39m server restarted.
-[2m12:36:53[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
-[2m12:36:53[22m [36m[1m[vite][22m[39m server restarted.
-[2m12:42:17[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/components/admin/AdminLayout.jsx, /src/pages/admin/AdminLoginPage.jsx, /src/components/admin/ProtectedRoute.jsx[22m
-[2m12:42:25[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/admin/AdminLoginPage.jsx, /src/styles/tailwind.css[22m
-[2m12:49:26[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/SiteHeader.tsx, /src/styles/tailwind.css[22m
-[2m12:49:46[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ContactPage.jsx, /src/styles/tailwind.css[22m
-[2m12:49:58[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/forms/ContactForm.jsx, /src/styles/tailwind.css[22m
-[2m12:50:59[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:18:41[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/admin/AdminPhotosPage.jsx, /src/pages/admin/AdminVideosPage.jsx, /src/pages/admin/AdminHomepagePage.jsx, /src/pages/admin/AdminBlogsPage.jsx, /src/components/admin/ImageDropZone.jsx[22m
-[2m13:24:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/admin/AdminPhotosPage.jsx, /src/pages/admin/AdminVideosPage.jsx, /src/pages/admin/AdminHomepagePage.jsx, /src/pages/admin/AdminBlogsPage.jsx, /src/components/admin/ImageDropZone.jsx[22m
-[2m13:25:14[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/admin/AdminPhotosPage.jsx, /src/styles/tailwind.css[22m
-[2m13:25:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:29:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:34:10[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:34:27[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:36:06[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:36:12[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
-[2m13:38:30[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/types/home.ts[22m
-[2m13:38:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/HomePage.tsx[22m
-[2m13:39:12[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ContactPage.jsx, /src/styles/tailwind.css[22m
-[2m13:39:21[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/forms/ContactForm.jsx, /src/styles/tailwind.css[22m
-[2m13:40:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m20:27:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/HomePage.tsx[22m
+[2m20:27:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/HomePage.tsx[22m
+[2m20:27:07[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m
+[2m20:28:44[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/VideosPage.jsx, /src/styles/tailwind.css[22m
+[2m20:28:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css, /src/pages/GalleryPage.jsx, /src/pages/BlogsPage.jsx, /src/pages/admin/AdminDashboardPage.jsx, /src/pages/VideosPage.jsx, /src/pages/admin/AdminBlogsPage.jsx, /src/pages/BlogDetailPage.jsx, /src/pages/AboutPage.jsx, /src/pages/admin/AdminPhotosPage.jsx, /src/pages/admin/AdminCategoriesPage.jsx, /src/pages/admin/AdminVideosPage.jsx, /src/pages/admin/AdminHomepagePage.jsx, /src/pages/HomePage.tsx[22m
+[2m20:29:03[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/admin/AdminVideosPage.jsx, /src/styles/tailwind.css[22m
+[2m20:29:27[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/media/VideoCard.jsx, /src/styles/tailwind.css[22m
+[2m20:29:37[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/base.css[22m

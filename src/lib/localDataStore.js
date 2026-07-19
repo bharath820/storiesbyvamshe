@@ -62,6 +62,26 @@ function isPlainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value);
 }
 
+function syncStarterBlogs(blogs) {
+  if (!blogs.some((blog) => blog.id === "blog-1")) return blogs;
+
+  const demoStarterBlogs = clone(demoBlogs);
+  const demoStarterBlogIds = new Set(demoStarterBlogs.map((blog) => blog.id));
+  const existingById = new Map(blogs.map((blog) => [blog.id, blog]));
+  const customBlogs = blogs.filter((blog) => !demoStarterBlogIds.has(blog.id));
+  const starterBlogs = demoStarterBlogs.map((demoBlog) => {
+    const existing = existingById.get(demoBlog.id);
+    return {
+      ...(existing || {}),
+      ...demoBlog,
+      status: existing?.status || demoBlog.status,
+      updatedAt: existing?.updatedAt || demoBlog.updatedAt || demoBlog.createdAt
+    };
+  });
+
+  return [...customBlogs, ...starterBlogs];
+}
+
 function normalizeState(value) {
   if (!isPlainObject(value)) return createInitialState();
   if (!isPlainObject(value.collections)) return createInitialState();
@@ -83,13 +103,8 @@ function normalizeState(value) {
     ...clone(demoCategories).filter((category) => !existingCategoryIds.has(category.id))
   );
 
-  // Keep existing browser-local demo sites in sync when new starter blogs are added.
-  if (safeState.collections.blogs.some((blog) => blog.id === "blog-1")) {
-    const existingBlogIds = new Set(safeState.collections.blogs.map((blog) => blog.id));
-    safeState.collections.blogs.push(
-      ...clone(demoBlogs).filter((blog) => !existingBlogIds.has(blog.id))
-    );
-  }
+  // Keep existing browser-local starter blogs aligned with the bundled demo content.
+  safeState.collections.blogs = syncStarterBlogs(safeState.collections.blogs);
 
   if (isPlainObject(value.homepageConfig)) {
     safeState.homepageConfig = clone(value.homepageConfig);

@@ -5,6 +5,7 @@ import { ResolvedImage } from '../components/media/ResolvedImage';
 import { categories, featuredStories, hero, instagram, stats, testimonials } from '../data/homeContent';
 import type { Category } from '../types/home';
 import { subscribeHomepageConfig } from '../lib/firestoreService';
+import { OFFICIAL_INSTAGRAM_HANDLE, OFFICIAL_INSTAGRAM_URL } from '../lib/socialLinks';
 
 type HomepageMedia = {
   id?: string;
@@ -47,6 +48,23 @@ function getGalleryCategoryPath(category: Category) {
     .replace(/^-|-$/g, '');
 
   return `/gallery?category=${encodeURIComponent(categoryParam)}`;
+}
+
+function getGlimpseCardClass(index: number, total: number) {
+  const tabletSpan = total % 2 === 1 && index === total - 1 ? 'sm:col-span-2' : 'sm:col-span-1';
+  let desktopSpan = 'lg:col-span-4';
+
+  if (total === 1) {
+    desktopSpan = 'lg:col-span-12';
+  } else if (total === 2) {
+    desktopSpan = 'lg:col-span-6';
+  } else if (total % 3 === 1) {
+    desktopSpan = index < 2 || index >= total - 2 ? 'lg:col-span-6' : 'lg:col-span-4';
+  } else if (total % 3 === 2) {
+    desktopSpan = index >= total - 2 ? 'lg:col-span-6' : 'lg:col-span-4';
+  }
+
+  return `${tabletSpan} ${desktopSpan}`;
 }
 
 export function HomePage() {
@@ -111,8 +129,8 @@ export function HomePage() {
             {activeHero?.subtitle || <>Weddings • Pre-Weddings • Baby Shoots<br />Maternity • Events • Cinematic Films</>}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <button className="rounded-full bg-brandText px-7 py-3 text-sm text-white transition hover:-translate-y-0.5 hover:bg-black">View Portfolio</button>
-            <button className="rounded-full border border-brandBorder bg-white px-7 py-3 text-sm transition hover:-translate-y-0.5 hover:border-brandText">Watch Showreel</button>
+            <Link to="/about" className="rounded-full bg-brandText px-7 py-3 text-sm text-white transition hover:-translate-y-0.5 hover:bg-black">View Portfolio</Link>
+            <Link to="/videos" className="rounded-full border border-brandBorder bg-white px-7 py-3 text-sm transition hover:-translate-y-0.5 hover:border-brandText">Watch Showreel</Link>
           </div>
         </motion.div>
 
@@ -166,10 +184,10 @@ export function HomePage() {
 
       <section className="section-shell py-14">
         <motion.h2 initial="hidden" whileInView="show" viewport={{ once: true }} variants={reveal} transition={{ duration: 0.6 }} className="font-display text-4xl sm:text-5xl">A Glimpse Of Our Work</motion.h2>
-        <div className="mt-8 columns-1 gap-5 sm:columns-2 lg:columns-3">
-          {homepageStories.map((story) => (
-            <motion.article key={story.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="group relative mb-5 overflow-hidden rounded-3xl">
-              <ResolvedImage src={story.image} alt={story.alt} className={`w-full object-cover transition duration-700 group-hover:scale-[1.06] ${story.size === 'tall' ? 'h-[30rem]' : story.size === 'wide' ? 'h-[19rem]' : 'h-[23rem]'}`} />
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12">
+          {homepageStories.map((story, index) => (
+            <motion.article key={story.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className={`group relative overflow-hidden rounded-3xl ${getGlimpseCardClass(index, homepageStories.length)}`}>
+              <ResolvedImage src={story.image} alt={story.alt} className="h-[21rem] w-full object-cover transition duration-700 group-hover:scale-[1.06] sm:h-[23rem] lg:h-[24rem]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
               {story.category && <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs text-black">{story.category}</span>}
               <button className="absolute bottom-5 left-5 rounded-full border border-white/70 bg-white/10 px-4 py-2 text-xs text-white opacity-0 backdrop-blur transition group-hover:opacity-100">View Story</button>
@@ -242,7 +260,7 @@ export function HomePage() {
 
       <section className="section-shell py-14">
         <h3 className="font-display text-4xl">Follow Our Journey</h3>
-        <p className="mt-2 text-sm text-brandSubtext">@storiesbyvamshe</p>
+        <p className="mt-2 text-sm text-brandSubtext">{OFFICIAL_INSTAGRAM_HANDLE}</p>
         <div className="journey-strip mt-6" aria-label="Recent Stories by Vamshe photographs">
           <div className="journey-strip__track">
             {[false, true].map((isDuplicate) => (
@@ -264,7 +282,14 @@ export function HomePage() {
             ))}
           </div>
         </div>
-        <button className="mt-6 rounded-full border border-brandText px-6 py-3 text-sm hover:bg-brandText hover:text-white">Follow On Instagram</button>
+        <a
+          href={OFFICIAL_INSTAGRAM_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-block rounded-full border border-brandText px-6 py-3 text-sm hover:bg-brandText hover:text-white"
+        >
+          Follow On Instagram
+        </a>
       </section>
 
       <section className="section-shell pb-16">
@@ -276,7 +301,7 @@ export function HomePage() {
               <Link to="/contact" className="rounded-full border border-brandBorder bg-white px-6 py-3 text-sm">Contact Us</Link>
             </div>
           </div>
-          <img src="/assets/home/cta-wedding.jpg" alt="Emotional wedding portrait with warm cinematic tones" className="h-[21rem] w-full rounded-[26px] object-cover" />
+          <img src="/assets/home/cta-wedding (2).jpg" alt="Reception couple portrait with warm cinematic tones" className="h-[21rem] w-full rounded-[26px] object-cover" />
         </div>
       </section>
     </div>

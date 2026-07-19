@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { subscribePublishedCollection } from "../lib/firestoreService";
 import { resolveAssetUrl } from "../lib/assetUrlService";
 
+const ABOUT_STORY_IMAGE = "/assets/about/about-story-holi-child.jpeg";
+
 const ABOUT_FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1600&q=80",
@@ -88,7 +90,7 @@ export function AboutPage() {
     };
   }, [imagePool]);
 
-  const primaryImage = resolvedPool[0] || imagePool[0];
+  const primaryImage = ABOUT_STORY_IMAGE;
   const recordsBackground = resolvedPool[1] || resolvedPool[0] || imagePool[1] || imagePool[0];
   const collageImages = [
     resolvedPool[2] || resolvedPool[0] || imagePool[2] || imagePool[0],
@@ -104,7 +106,7 @@ export function AboutPage() {
       <section className="about-story section">
         <div className="about-story__split">
           <div className="about-story__media">
-            <img src={primaryImage} alt="Lead photographer capturing a wedding moment" loading="lazy" />
+            <img src={primaryImage} alt="Child smiling during a colorful celebration" loading="lazy" />
           </div>
           <div className="about-story__content">
             <div className="about-story__content-inner">

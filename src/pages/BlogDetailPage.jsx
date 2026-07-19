@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ResolvedImage } from "../components/media/ResolvedImage";
+import { demoBlogs } from "../data/demoContent";
 import { subscribePublishedCollection } from "../lib/firestoreService";
 import { prettyDate } from "../utils/format";
 
@@ -10,7 +11,7 @@ export function BlogDetailPage() {
 
   useEffect(() => {
     return subscribePublishedCollection("blogs", (rows) => {
-      setBlog(rows.find((item) => item.slug === slug) || null);
+      setBlog(rows.find((item) => item.slug === slug) || demoBlogs.find((item) => item.slug === slug) || null);
     });
   }, [slug]);
 

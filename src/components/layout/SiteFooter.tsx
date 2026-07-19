@@ -1,5 +1,7 @@
 ﻿import { NavLink } from 'react-router-dom';
 
+import { OFFICIAL_INSTAGRAM_HANDLE } from '../../lib/socialLinks';
+
 export function SiteFooter() {
   return (
     <footer className="bg-[#0f0f0f] text-white">
@@ -32,7 +34,7 @@ export function SiteFooter() {
             <a href="mailto:storiesbyvamshe9@gmail.com">storiesbyvamshe9@gmail.com</a>
             <p>+91 90305 01106</p>
             <p>Hyderabad, Telangana</p>
-            <p>Instagram: @storiesbyvamshe</p>
+            <p>Instagram: {OFFICIAL_INSTAGRAM_HANDLE}</p>
           </div>
         </div>
       </div>

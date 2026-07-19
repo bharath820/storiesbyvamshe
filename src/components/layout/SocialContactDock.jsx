@@ -1,7 +1,9 @@
+import { OFFICIAL_INSTAGRAM_URL } from "../../lib/socialLinks";
+
 const socialLinks = [
   {
     name: "Instagram",
-    href: "https://www.instagram.com/storiesby_vamshe?igsh=MWsxdnlzamhianQ2aw==",
+    href: OFFICIAL_INSTAGRAM_URL,
     className: "social-contact-dock__link social-contact-dock__link--instagram",
     icon: (
       <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">

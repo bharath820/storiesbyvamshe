@@ -5,7 +5,7 @@ export function ContactPage() {
     <section className="contact-page contact-page--split" aria-labelledby="contact-title">
       <div className="contact-split">
         <figure className="contact-split__media">
-          <img src="/assets/home/wedding-1.jpg" alt="Wedding portrait by Stories by Vamshe" />
+          <img src="/assets/home/wedding-1.jpeg" alt="Wedding portrait by Stories by Vamshe" />
         </figure>
 
         <div className="contact-split__panel">

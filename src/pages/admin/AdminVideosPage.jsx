@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageDropZone } from "../../components/admin/ImageDropZone";
 import { ResolvedImage } from "../../components/media/ResolvedImage";
 import { createDocument, removeDocument, subscribeCollection, updateDocument } from "../../lib/firestoreService";
 import { deleteStoredAsset, uploadAsset } from "../../lib/storageService";
 
-const initialForm = { title: "", categoryId: "", mediaUrl: "", status: "published" };
+const initialForm = { title: "", mediaUrl: "", status: "published" };
 
 export function AdminVideosPage() {
-  const [categories, setCategories] = useState([]);
   const [videos, setVideos] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -17,12 +16,9 @@ export function AdminVideosPage() {
   const [actionError, setActionError] = useState("");
 
   useEffect(() => {
-    const stopCategories = subscribeCollection("categories", setCategories, (e) => setActionError(e.message));
-    const stopVideos = subscribeCollection("videos", setVideos, (e) => setActionError(e.message));
-    return () => { stopCategories(); stopVideos(); };
+    return subscribeCollection("videos", setVideos, (e) => setActionError(e.message));
   }, []);
   useEffect(() => () => thumbnailPreview && URL.revokeObjectURL(thumbnailPreview), [thumbnailPreview]);
-  const videoCategories = useMemo(() => categories.filter((c) => c.isActive !== false && c.type !== "photo"), [categories]);
 
   function selectThumbnail(files) {
     if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview);
@@ -69,12 +65,7 @@ export function AdminVideosPage() {
     <div>
       <h1>Videos</h1>
       <form className="admin-form-stack" onSubmit={submit}>
-        <div className="grid-2">
-          <input className="input" placeholder="Video title" value={form.title} onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))} />
-          <select className="select" value={form.categoryId} onChange={(e) => setForm((s) => ({ ...s, categoryId: e.target.value }))}>
-            <option value="">Select Category</option>{videoCategories.map((c) => <option value={c.id} key={c.id}>{c.name}</option>)}
-          </select>
-        </div>
+        <input className="input" placeholder="Video title, e.g. Wedding" value={form.title} onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))} />
         <input className="input" placeholder="YouTube or Vimeo video URL" value={form.mediaUrl} onChange={(e) => setForm((s) => ({ ...s, mediaUrl: e.target.value }))} />
         {thumbnailPreview ? (
           <div className="selected-image-preview"><img src={thumbnailPreview} alt="Selected video thumbnail" /><button className="btn btn-danger" type="button" onClick={clearThumbnail}>Delete</button></div>

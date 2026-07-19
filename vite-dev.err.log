@@ -2,7 +2,7 @@ node:internal/fs/watchers:321
     const error = new UVException({
                   ^
 
-Error: EBUSY: resource busy or locked, watch 'C:\Users\Nexes\Documents\storiesbyvamshee\storiesbyvamshe\.codex\edge-desktop-profile\GPUPersistentCache\DawnGraphiteCache\MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3\cache.db'
+Error: EBUSY: resource busy or locked, watch 'C:\Users\Nexes\Documents\storiesbyvamshee\storiesbyvamshe\public\assets\home\IMG_6337.JPG.jpeg'
     at FSWatcher.<computed> (node:internal/fs/watchers:321:19)
     at Object.watch (node:fs:2548:36)
     at createFsWatchInstance (file:///C:/Users/Nexes/Documents/storiesbyvamshee/storiesbyvamshe/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:42780:17)
@@ -16,8 +16,8 @@ Emitted 'error' event on FSWatcher instance at:
   errno: -4082,
   syscall: 'watch',
   code: 'EBUSY',
-  path: 'C:\\Users\\Nexes\\Documents\\storiesbyvamshee\\storiesbyvamshe\\.codex\\edge-desktop-profile\\GPUPersistentCache\\DawnGraphiteCache\\MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3\\cache.db',
-  filename: 'C:\\Users\\Nexes\\Documents\\storiesbyvamshee\\storiesbyvamshe\\.codex\\edge-desktop-profile\\GPUPersistentCache\\DawnGraphiteCache\\MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3\\cache.db'
+  path: 'C:\\Users\\Nexes\\Documents\\storiesbyvamshee\\storiesbyvamshe\\public\\assets\\home\\IMG_6337.JPG.jpeg',
+  filename: 'C:\\Users\\Nexes\\Documents\\storiesbyvamshee\\storiesbyvamshe\\public\\assets\\home\\IMG_6337.JPG.jpeg'
 }
 
 Node.js v24.18.0
