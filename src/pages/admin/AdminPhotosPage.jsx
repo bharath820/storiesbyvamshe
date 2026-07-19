@@ -3,6 +3,7 @@ import { ImageDropZone } from "../../components/admin/ImageDropZone";
 import { ResolvedImage } from "../../components/media/ResolvedImage";
 import { createDocument, removeDocument, subscribeCollection } from "../../lib/firestoreService";
 import { deleteStoredAsset, uploadAsset } from "../../lib/storageService";
+import { buildCategoryNameLookup, getItemCategoryName, itemMatchesCategory } from "../../utils/categoryMatching";
 
 function uploadKey(file) {
   return `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`;
@@ -34,7 +35,6 @@ export function AdminPhotosPage() {
   const [categories, setCategories] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [categoryId, setCategoryId] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all");
   const [uploads, setUploads] = useState([]);
   const [deletingId, setDeletingId] = useState("");
   const [actionError, setActionError] = useState("");
@@ -52,15 +52,28 @@ export function AdminPhotosPage() {
     () => categories.filter((category) => category.isActive !== false && category.type !== "video"),
     [categories]
   );
-  const categoryMap = useMemo(() => new Map(photoCategories.map((category) => [category.id, category.name])), [photoCategories]);
-  const filteredPhotos = photos.filter((photo) => activeFilter === "all" || photo.categoryId === activeFilter);
+  const selectedCategory = useMemo(
+    () => photoCategories.find((category) => category.id === categoryId) || null,
+    [photoCategories, categoryId]
+  );
+  const categoryNameLookup = useMemo(() => buildCategoryNameLookup(photoCategories), [photoCategories]);
+  const filteredPhotos = useMemo(
+    () => selectedCategory ? photos.filter((photo) => itemMatchesCategory(photo, selectedCategory)) : [],
+    [photos, selectedCategory]
+  );
+
+  useEffect(() => {
+    if (categoryId && !photoCategories.some((category) => category.id === categoryId)) {
+      setCategoryId("");
+    }
+  }, [categoryId, photoCategories]);
 
   async function uploadFiles(files) {
-    if (!categoryId) {
+    if (!selectedCategory) {
       setActionError("Select a gallery subsection before adding images.");
       return;
     }
-    const selectedCategoryId = categoryId;
+    const uploadCategory = selectedCategory;
     setActionError("");
     const pending = files.map((file) => ({ key: uploadKey(file), name: file.name, progress: 0, status: "queued" }));
     setUploads((rows) => [...pending, ...rows].slice(0, 24));
@@ -74,12 +87,14 @@ export function AdminPhotosPage() {
           setUploads((rows) => rows.map((row) => row.key === item.key ? { ...row, status: "uploading", progress } : row));
         });
         await createDocument("photos", {
-          categoryId: selectedCategoryId,
+          categoryId: uploadCategory.id,
+          categorySlug: uploadCategory.slug || "",
+          categoryName: uploadCategory.name || "",
           imageUrl: asset.imageUrl,
           storagePath: asset.storagePath,
           status: "published"
         });
-        setUploads((rows) => rows.map((row) => row.key === item.key ? { ...row, progress: 100, status: "complete" } : row));
+        setUploads((rows) => rows.filter((row) => row.key !== item.key));
       } catch (error) {
         if (asset?.storagePath) deleteStoredAsset(asset.storagePath).catch(() => {});
         setUploads((rows) => rows.map((row) => row.key === item.key ? {
@@ -133,26 +148,24 @@ export function AdminPhotosPage() {
         {actionError && <p className="error-text">{actionError}</p>}
       </div>
 
-      <div className="admin-gallery-filter">
-        <select className="select" value={activeFilter} onChange={(event) => setActiveFilter(event.target.value)}>
-          <option value="all">All Subsections</option>
-          {photoCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-        </select>
-      </div>
-
-      <div className="admin-media-grid">
-        {filteredPhotos.map((photo) => (
-          <article key={photo.id} className="admin-media-card">
-            <ResolvedImage src={photo.imageUrl} alt={`${categoryMap.get(photo.categoryId) || "Gallery"} image`} />
-            <div className="admin-media-card__footer">
-              <span>{categoryMap.get(photo.categoryId) || "General"}</span>
-              <button className="btn btn-danger" type="button" disabled={deletingId === photo.id} onClick={() => deletePhoto(photo)}>
-                {deletingId === photo.id ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </article>
-        ))}
-      </div>
+      {selectedCategory && filteredPhotos.length > 0 && (
+        <div className="admin-media-grid">
+          {filteredPhotos.map((photo) => {
+            const categoryName = getItemCategoryName(photo, categoryNameLookup, selectedCategory.name || "General");
+            return (
+              <article key={photo.id} className="admin-media-card">
+                <ResolvedImage src={photo.imageUrl} alt={`${categoryName} image`} />
+                <div className="admin-media-card__footer">
+                  <span>{categoryName}</span>
+                  <button className="btn btn-danger" type="button" disabled={deletingId === photo.id} onClick={() => deletePhoto(photo)}>
+                    {deletingId === photo.id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

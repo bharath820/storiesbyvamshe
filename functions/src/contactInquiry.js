@@ -62,10 +62,6 @@ function normalizeInquiry(data = {}) {
   if (!isValidEmail(inquiry.email)) throw new ContactInquiryError("invalid-argument", "Enter a valid email.");
   if (!inquiry.subject) throw new ContactInquiryError("invalid-argument", "Subject is required.");
   if (!isValidPhone(inquiry.phone)) throw new ContactInquiryError("invalid-argument", "Enter a valid phone number.");
-  if (inquiry.message.length < 10) {
-    throw new ContactInquiryError("invalid-argument", "Please provide at least 10 characters.");
-  }
-
   return inquiry;
 }
 

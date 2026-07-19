@@ -14,7 +14,7 @@ const ABOUT_FALLBACK_IMAGES = [
 ];
 
 const RECORDS = [
-  { value: "25+", label: "Years of Experience" },
+  { value: "12+", label: "Years of Experience" },
   { value: "4500+", label: "Weddings" },
   { value: "1200+", label: "Celebrity Shoots" },
   { value: "200+", label: "Workshops" }
@@ -111,24 +111,22 @@ export function AboutPage() {
               <p className="about-story__eyebrow">About Us</p>
               <h1 className="about-story__title">Stories by Vamshe</h1>
               <p>
-                At every wedding, every moment is precious, and we believe photography is the most powerful
-                way to preserve those moments for a lifetime. We are a team of passionate and skilled
-                photographers who go beyond just taking pictures, creating stories filled with emotion,
-                warmth, and timeless memories.
+                At <strong>Storiesbyvamshe</strong>, we believe every moment has a story worth remembering.
+                With <strong>12+ years of experience</strong> in photography, our team of talented and
+                passionate professionals is dedicated to capturing genuine emotions and timeless memories.
               </p>
               <p>
-                With <strong>25 years of experience and over 4500 weddings</strong> captured across India and
-                worldwide, our studio has built a reputation for delivering unique, creative, and heartfelt
-                wedding stories.
+                We specialize in <strong>wedding photography, candid moments, and cinematic films</strong>,
+                creating beautiful visuals that reflect your unique story. Our approach is simple: we focus
+                on natural moments, attention to detail, and delivering photographs and films you'll cherish
+                for a lifetime.
               </p>
               <p>
-                We believe in <strong>authentic storytelling</strong>, not forced poses. Our style focuses on
-                moments as they naturally unfold, combining light, mood, texture, and relationships to
-                create images that genuinely reflect your story.
+                Whether it's an intimate ceremony or a grand celebration, we are committed to providing a
+                professional, comfortable, and memorable experience from start to finish.
               </p>
               <p>
-                While trends evolve, our focus remains unchanged: <strong>to capture your love story and
-                emotions in their truest form</strong>.
+                <strong>Storiesbyvamshe - Capturing Moments. Creating Memories.</strong>
               </p>
             </div>
           </div>

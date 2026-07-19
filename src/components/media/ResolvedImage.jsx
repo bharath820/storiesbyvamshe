@@ -1,25 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { resolveAssetUrl } from "../../lib/assetUrlService";
 
-export function ResolvedImage({ src, alt, className, loading = "lazy" }) {
+export function ResolvedImage({ src, alt, className, loading = "lazy", fallbackSrc = "" }) {
+  const sources = useMemo(() => [src, fallbackSrc].filter(Boolean), [src, fallbackSrc]);
+  const [sourceIndex, setSourceIndex] = useState(0);
   const [resolvedSrc, setResolvedSrc] = useState("");
+  const activeSrc = sources[sourceIndex] || "";
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [src, fallbackSrc]);
 
   useEffect(() => {
     let isActive = true;
     let objectUrlToRevoke = "";
 
     async function loadResolved() {
-      if (!src) {
+      if (!activeSrc) {
         setResolvedSrc("");
         return;
       }
 
       try {
-        const nextSrc = await resolveAssetUrl(src);
+        const nextSrc = await resolveAssetUrl(activeSrc);
         if (!isActive) {
           if (nextSrc && nextSrc.startsWith("blob:")) {
             window.URL.revokeObjectURL(nextSrc);
           }
+          return;
+        }
+
+        if (!nextSrc && sources[sourceIndex + 1]) {
+          setSourceIndex((currentIndex) => currentIndex + 1);
           return;
         }
 
@@ -34,7 +46,12 @@ export function ResolvedImage({ src, alt, className, loading = "lazy" }) {
           objectUrlToRevoke = nextSrc;
         }
       } catch {
-        if (isActive) setResolvedSrc("");
+        if (!isActive) return;
+        if (sources[sourceIndex + 1]) {
+          setSourceIndex((currentIndex) => currentIndex + 1);
+        } else {
+          setResolvedSrc("");
+        }
       }
     }
 
@@ -46,10 +63,24 @@ export function ResolvedImage({ src, alt, className, loading = "lazy" }) {
         window.URL.revokeObjectURL(objectUrlToRevoke);
       }
     };
-  }, [src]);
+  }, [activeSrc, sourceIndex, sources]);
 
   if (!resolvedSrc) return null;
 
-  return <img src={resolvedSrc} alt={alt} className={className} loading={loading} />;
+  return (
+    <img
+      src={resolvedSrc}
+      alt={alt}
+      className={className}
+      loading={loading}
+      onError={() => {
+        if (sources[sourceIndex + 1]) {
+          setSourceIndex((currentIndex) => currentIndex + 1);
+        } else {
+          setResolvedSrc("");
+        }
+      }}
+    />
+  );
 }
 

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CategoryTabs } from "../components/filters/CategoryTabs";
 import { MasonryGrid } from "../components/media/MasonryGrid";
 import { PhotoCard } from "../components/media/PhotoCard";
 import { usePaginatedSlice } from "../hooks/usePaginatedSlice";
 import { subscribePublishedCategories, subscribePublishedCollection } from "../lib/firestoreService";
+import { categoryMatchesValue, findItemCategory, normalizeCategoryValue } from "../utils/categoryMatching";
 
 const GALLERY_CATEGORY_ORDER = [
   "engagement",
@@ -17,15 +19,23 @@ const GALLERY_CATEGORY_ORDER = [
 ];
 
 function normalizeCategoryName(category) {
-  return String(category.slug || category.name || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+  return normalizeCategoryValue(category.slug || category.name || category.id);
+}
+
+function categoryMatchesRequest(category, requestedCategory) {
+  return categoryMatchesValue(category, requestedCategory);
+}
+
+function getCategorySearchValue(category) {
+  return category.slug || category.name || category.id;
 }
 
 export function GalleryPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
+  const requestedCategory = normalizeCategoryValue(searchParams.get("category"));
 
   useEffect(() => {
     let categoryRows = [];
@@ -38,13 +48,17 @@ export function GalleryPage() {
             GALLERY_CATEGORY_ORDER.indexOf(normalizeCategoryName(a)) -
             GALLERY_CATEGORY_ORDER.indexOf(normalizeCategoryName(b))
         );
-      const catMap = new Map(galleryCategories.map((category) => [category.id, category.name]));
       setCategories(galleryCategories);
       setPhotos(
         [...photoRows]
-          .filter((photo) => catMap.has(photo.categoryId))
+          .map((photo) => {
+            const category = findItemCategory(photo, galleryCategories);
+            return category
+              ? { ...photo, categoryId: category.id, categoryName: category.name }
+              : null;
+          })
+          .filter(Boolean)
           .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")))
-          .map((photo) => ({ ...photo, categoryName: catMap.get(photo.categoryId) }))
       );
     };
     const stopCategories = subscribePublishedCategories((rows) => { categoryRows = rows; sync(); });
@@ -56,10 +70,27 @@ export function GalleryPage() {
   }, []);
 
   useEffect(() => {
-    if (!categories.some((category) => category.id === activeCategory)) {
-      setActiveCategory(categories[0]?.id || "");
+    if (!categories.length) {
+      if (activeCategory) {
+        setActiveCategory("");
+      }
+      return;
     }
-  }, [categories, activeCategory]);
+
+    const requestedMatch = requestedCategory
+      ? categories.find((category) => categoryMatchesRequest(category, requestedCategory))
+      : null;
+    const currentCategoryExists = categories.some((category) => category.id === activeCategory);
+    const nextCategory = requestedCategory
+      ? requestedMatch?.id || categories[0]?.id || ""
+      : currentCategoryExists
+        ? activeCategory
+        : categories[0]?.id || "";
+
+    if (nextCategory !== activeCategory) {
+      setActiveCategory(nextCategory);
+    }
+  }, [categories, activeCategory, requestedCategory]);
 
   const filtered = useMemo(() => {
     return photos.filter((photo) => photo.categoryId === activeCategory);
@@ -71,11 +102,25 @@ export function GalleryPage() {
     reset();
   }, [activeCategory, reset]);
 
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+
+    const category = categories.find((item) => item.id === categoryId);
+    setSearchParams((currentParams) => {
+      if (category) {
+        currentParams.set("category", getCategorySearchValue(category));
+      } else {
+        currentParams.delete("category");
+      }
+      return currentParams;
+    });
+  };
+
   return (
     <section className="section gallery-page">
       <div className="container">
         <div className="filters-row filters-row--gallery">
-          <CategoryTabs categories={categories} active={activeCategory} onChange={setActiveCategory} allowAll={false} />
+          <CategoryTabs categories={categories} active={activeCategory} onChange={handleCategoryChange} allowAll={false} />
         </div>
         <MasonryGrid>
           {visible.map((photo) => (

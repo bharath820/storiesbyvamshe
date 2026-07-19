@@ -26,9 +26,6 @@ export function ContactForm() {
     if (!isValidEmail(values.email)) nextErrors.email = "Enter a valid email.";
     if (!values.subject.trim()) nextErrors.subject = "Subject is required.";
     if (!isValidPhone(values.phone)) nextErrors.phone = "Enter a valid phone number.";
-    if (!values.message.trim() || values.message.trim().length < 10) {
-      nextErrors.message = "Please provide at least 10 characters.";
-    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -106,14 +103,14 @@ export function ContactForm() {
       </label>
 
       <label className="field">
-        <span className="visually-hidden">Message <em>*</em></span>
+        <span className="visually-hidden">Message optional</span>
         <textarea
           rows={4}
           className="textarea"
           name="message"
           value={values.message}
           onChange={(event) => updateField("message", event.target.value)}
-          placeholder="Message"
+          placeholder="Message (optional)"
         />
         {errors.message && <small className="error-text">{errors.message}</small>}
       </label>

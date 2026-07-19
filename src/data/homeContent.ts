@@ -9,8 +9,7 @@ export const categories = [
   'Wedding',
   'Reception',
   'Birthday',
-  'Baby Shoot',
-  'Maternity'
+  'Baby Shoot'
 ] as const;
 
 export const hero: HomeHero = {
@@ -45,7 +44,7 @@ export const testimonials: Testimonial[] = [
 ];
 
 export const instagram: InstagramItem[] = [
-  { id: 'i1', image: '/assets/home/insta-1.jpg', alt: 'Wedding details close-up' },
+  { id: 'i1', image: '/assets/home/insta-1.jpeg', alt: 'Wedding details close-up' },
   { id: 'i2', image: '/assets/home/insta-2.jpg', alt: 'Candid bride portrait' },
   { id: 'i3', image: '/assets/home/insta-3.jpg', alt: 'Couple cinematic frame' },
   { id: 'i4', image: '/assets/home/insta-4.jpg', alt: 'Maternity portrait detail' },

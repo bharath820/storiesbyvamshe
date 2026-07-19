@@ -98,14 +98,14 @@ test("rejects invalid phone before writing to Firestore", async () => {
   assert.equal(harness.writes.length, 0);
 });
 
-test("rejects too-short messages before writing to Firestore", async () => {
+test("accepts inquiries without an optional message", async () => {
   const harness = createHarness();
 
-  await assert.rejects(
-    () => harness.handler({ data: { ...validPayload, message: "short" } }),
-    (error) => error instanceof ContactInquiryError && error.code === "invalid-argument"
-  );
-  assert.equal(harness.writes.length, 0);
+  const result = await harness.handler({ data: { ...validPayload, message: "   " } });
+
+  assert.equal(result.ok, true);
+  assert.equal(harness.writes[0].payload.message, "");
+  assert.match(harness.emails[0].text, /Message: $/m);
 });
 
 test("returns an error and stores failure status when email delivery fails", async () => {

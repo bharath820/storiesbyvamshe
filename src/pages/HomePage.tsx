@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ResolvedImage } from '../components/media/ResolvedImage';
 import { categories, featuredStories, hero, instagram, stats, testimonials } from '../data/homeContent';
 import type { Category } from '../types/home';
 import { subscribeHomepageConfig } from '../lib/firestoreService';
@@ -39,7 +40,17 @@ function Icon({ name }: { name: string }) {
   );
 }
 
+function getGalleryCategoryPath(category: Category) {
+  const categoryParam = category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return `/gallery?category=${encodeURIComponent(categoryParam)}`;
+}
+
 export function HomePage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<Category>('All');
   const [slide, setSlide] = useState(0);
   const [heroIndex, setHeroIndex] = useState(0);
@@ -111,10 +122,12 @@ export function HomePage() {
           transition={{ duration: 0.9 }}
           className="relative min-w-0 overflow-hidden rounded-[32px] bg-[#F8F4EE] shadow-soft"
         >
-          <motion.img
+          <ResolvedImage
             src={activeHero?.imageUrl || hero.image}
             alt={activeHero?.title || hero.alt}
             className="mx-auto h-[58svh] min-h-[360px] max-h-[680px] w-full object-contain sm:h-[68svh] lg:h-[76svh]"
+            loading="eager"
+            fallbackSrc={hero.image}
           />
           <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-gradient-to-t from-black/10 to-transparent" />
         </motion.div>
@@ -130,7 +143,11 @@ export function HomePage() {
             {categories.filter((c) => c !== 'All').map((category) => (
               <button
                 key={category}
-                onClick={() => setActiveCategory(category)}
+                type="button"
+                onClick={() => {
+                  setActiveCategory(category);
+                  navigate(getGalleryCategoryPath(category));
+                }}
                 className={`group min-w-[165px] rounded-2xl border px-4 py-4 text-left transition ${
                   activeCategory === category
                     ? 'border-black bg-black text-white'
@@ -152,7 +169,7 @@ export function HomePage() {
         <div className="mt-8 columns-1 gap-5 sm:columns-2 lg:columns-3">
           {homepageStories.map((story) => (
             <motion.article key={story.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="group relative mb-5 overflow-hidden rounded-3xl">
-              <img src={story.image} alt={story.alt} className={`w-full object-cover transition duration-700 group-hover:scale-[1.06] ${story.size === 'tall' ? 'h-[30rem]' : story.size === 'wide' ? 'h-[19rem]' : 'h-[23rem]'}`} />
+              <ResolvedImage src={story.image} alt={story.alt} className={`w-full object-cover transition duration-700 group-hover:scale-[1.06] ${story.size === 'tall' ? 'h-[30rem]' : story.size === 'wide' ? 'h-[19rem]' : 'h-[23rem]'}`} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
               {story.category && <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs text-black">{story.category}</span>}
               <button className="absolute bottom-5 left-5 rounded-full border border-white/70 bg-white/10 px-4 py-2 text-xs text-white opacity-0 backdrop-blur transition group-hover:opacity-100">View Story</button>
