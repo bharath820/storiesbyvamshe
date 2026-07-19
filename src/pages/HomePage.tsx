@@ -15,6 +15,11 @@ type HomepageMedia = {
   kicker?: string;
 };
 
+type HomeCategory = (typeof categories)[number];
+type CuratedCategory = Exclude<HomeCategory, 'All'>;
+
+const curatedCategories = categories.filter((category): category is CuratedCategory => category !== 'All');
+
 const reveal = {
   hidden: { opacity: 0, y: 32 },
   show: { opacity: 1, y: 0 }
@@ -151,33 +156,48 @@ export function HomePage() {
         </motion.div>
       </section>
 
-      <section className="bg-[#FAF7F2] py-8">
+      <section className="bg-[#FAF7F2] py-6 sm:py-8">
         <div className="section-shell">
-          <div className="mb-6 flex items-center justify-between gap-3">
-            <h2 className="font-display text-3xl sm:text-4xl">Curated Categories</h2>
-            <button onClick={() => setActiveCategory('All')} className="text-xs uppercase tracking-[0.2em] text-brandSubtext hover:text-brandText">Show All</button>
+          <div className="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:items-center">
+            <h2 className="font-display text-2xl leading-tight sm:text-4xl">Curated Categories</h2>
+            <button type="button" onClick={() => setActiveCategory('All')} className="shrink-0 text-[10px] uppercase leading-4 tracking-[0.18em] text-brandSubtext hover:text-brandText sm:text-xs sm:tracking-[0.2em]">Show All</button>
           </div>
-          <div className="flex gap-2.5 overflow-x-auto pb-2 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible">
-            {categories.filter((c) => c !== 'All').map((category) => (
-              <button
-                key={category}
-                type="button"
-                onClick={() => {
-                  setActiveCategory(category);
-                  navigate(getGalleryCategoryPath(category));
-                }}
-                className={`group min-w-[165px] rounded-2xl border px-4 py-4 text-left transition ${
-                  activeCategory === category
-                    ? 'border-black bg-black text-white'
-                    : 'border-brandBorder bg-white text-brandText hover:border-brandGold hover:bg-brandSoft'
-                }`}
-              >
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/5 group-hover:bg-black/10">
-                  <Icon name={category} />
+          <div className="category-loop" aria-label="Curated categories">
+            <div className="category-loop__track">
+              {[false, true].map((isDuplicate) => (
+                <div
+                  key={isDuplicate ? 'duplicate' : 'original'}
+                  className="category-loop__set"
+                  aria-hidden={isDuplicate ? 'true' : undefined}
+                >
+                  {curatedCategories.map((category) => (
+                    <button
+                      key={`${category}-${isDuplicate ? 'duplicate' : 'original'}`}
+                      type="button"
+                      tabIndex={isDuplicate ? -1 : undefined}
+                      onClick={() => {
+                        setActiveCategory(category);
+                        navigate(getGalleryCategoryPath(category));
+                      }}
+                      className={`category-loop__card group rounded-2xl border px-3.5 py-3 text-left transition sm:px-4 sm:py-4 ${
+                        activeCategory === category
+                          ? 'border-black bg-black text-white'
+                          : 'border-brandBorder bg-white text-brandText hover:border-brandGold hover:bg-brandSoft'
+                      }`}
+                    >
+                      <div
+                        className={`mb-2.5 flex h-8 w-8 items-center justify-center rounded-full sm:mb-3 sm:h-9 sm:w-9 ${
+                          activeCategory === category ? 'bg-white/15 text-white' : 'bg-black/5 group-hover:bg-black/10'
+                        }`}
+                      >
+                        <Icon name={category} />
+                      </div>
+                      <p className="text-xs font-medium leading-tight sm:text-sm">{category}</p>
+                    </button>
+                  ))}
                 </div>
-                    <p className="text-sm font-medium">{category}</p>
-                </button>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -258,10 +278,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="section-shell py-14">
-        <h3 className="font-display text-4xl">Follow Our Journey</h3>
+      <section className="section-shell py-16">
+        <h3 className="font-display text-4xl sm:text-5xl">Follow Our Journey</h3>
         <p className="mt-2 text-sm text-brandSubtext">{OFFICIAL_INSTAGRAM_HANDLE}</p>
-        <div className="journey-strip mt-6" aria-label="Recent Stories by Vamshe photographs">
+        <div className="journey-strip mt-7" aria-label="Recent Stories by Vamshe photographs">
           <div className="journey-strip__track">
             {[false, true].map((isDuplicate) => (
               <div
@@ -275,7 +295,7 @@ export function HomePage() {
                     src={item.image}
                     alt={isDuplicate ? '' : item.alt}
                     loading="lazy"
-                    className="h-48 w-40 shrink-0 rounded-2xl object-cover transition duration-500 hover:scale-[1.04] sm:h-56 sm:w-48"
+                    className="h-64 w-52 shrink-0 rounded-2xl object-cover transition duration-500 hover:scale-[1.04] sm:h-72 sm:w-60 lg:h-80 lg:w-64"
                   />
                 ))}
               </div>

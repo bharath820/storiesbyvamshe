@@ -1,4 +1,4 @@
-import { OFFICIAL_INSTAGRAM_URL } from "../../lib/socialLinks";
+import { OFFICIAL_INSTAGRAM_URL, OFFICIAL_WHATSAPP_URL } from "../../lib/socialLinks";
 
 const socialLinks = [
   {
@@ -15,7 +15,7 @@ const socialLinks = [
   },
   {
     name: "WhatsApp",
-    href: "https://wa.me/919030501106?text=Hi%20Stories%20by%20Vamshe%2C%20I%20would%20like%20to%20book%20a%20session.",
+    href: OFFICIAL_WHATSAPP_URL,
     className: "social-contact-dock__link social-contact-dock__link--whatsapp",
     icon: (
       <svg aria-hidden="true" viewBox="0 0 32 32" focusable="false">
