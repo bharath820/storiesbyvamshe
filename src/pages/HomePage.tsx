@@ -207,7 +207,13 @@ export function HomePage() {
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12">
           {homepageStories.map((story, index) => (
             <motion.article key={story.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className={`group relative overflow-hidden rounded-3xl ${getGlimpseCardClass(index, homepageStories.length)}`}>
-              <ResolvedImage src={story.image} alt={story.alt} className="h-[21rem] w-full object-cover transition duration-700 group-hover:scale-[1.06] sm:h-[23rem] lg:h-[24rem]" />
+              <ResolvedImage
+                src={story.image}
+                alt={story.alt}
+                className={`h-[21rem] w-full transition duration-700 group-hover:scale-[1.06] sm:h-[23rem] lg:h-[24rem] ${
+                  story.category === 'Engagement' ? 'bg-black object-contain' : 'object-cover'
+                }`}
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
               {story.category && <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs text-black">{story.category}</span>}
               <button className="absolute bottom-5 left-5 rounded-full border border-white/70 bg-white/10 px-4 py-2 text-xs text-white opacity-0 backdrop-blur transition group-hover:opacity-100">View Story</button>
