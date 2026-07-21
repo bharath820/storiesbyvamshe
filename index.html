@@ -18,12 +18,86 @@
         font-family: Inter, sans-serif;
       }
       #boot-status {
-        margin: 18px;
-        padding: 12px 14px;
-        border-radius: 10px;
-        background: #fff4de;
-        border: 1px solid #f0d5a2;
-        font-size: 14px;
+        min-height: 100vh;
+        padding: 22px 4%;
+        background: #fff;
+      }
+      .boot-skeleton__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        height: 42px;
+      }
+      .boot-skeleton__brand,
+      .boot-skeleton__nav,
+      .boot-skeleton__line,
+      .boot-skeleton__button,
+      .boot-skeleton__image {
+        background: linear-gradient(90deg, #f1eee9 25%, #faf8f5 50%, #f1eee9 75%);
+        background-size: 200% 100%;
+        animation: boot-shimmer 1.4s ease-in-out infinite;
+      }
+      .boot-skeleton__brand {
+        width: 180px;
+        height: 22px;
+        border-radius: 5px;
+      }
+      .boot-skeleton__nav {
+        width: min(42%, 420px);
+        height: 14px;
+        border-radius: 999px;
+      }
+      .boot-skeleton__hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 8%;
+        max-width: 1200px;
+        min-height: 76vh;
+        margin: 0 auto;
+      }
+      .boot-skeleton__copy {
+        display: grid;
+        gap: 18px;
+      }
+      .boot-skeleton__line {
+        width: min(90%, 500px);
+        height: 42px;
+        border-radius: 6px;
+      }
+      .boot-skeleton__line--short {
+        width: 65%;
+        height: 16px;
+      }
+      .boot-skeleton__buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .boot-skeleton__button {
+        width: 130px;
+        height: 42px;
+        border-radius: 999px;
+      }
+      .boot-skeleton__image {
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        border-radius: 30px;
+      }
+      @keyframes boot-shimmer {
+        from { background-position: 200% 0; }
+        to { background-position: -200% 0; }
+      }
+      @media (max-width: 700px) {
+        #boot-status { padding: 16px; }
+        .boot-skeleton__nav { width: 100px; }
+        .boot-skeleton__hero {
+          grid-template-columns: 1fr;
+          gap: 30px;
+          padding: 50px 0;
+        }
+        .boot-skeleton__image { max-width: 500px; }
       }
       #boot-status.error {
         background: #ffeaea;
@@ -33,7 +107,24 @@
     </style>
   </head>
   <body>
-    <div id="boot-status">Loading app...</div>
+    <div id="boot-status" role="status" aria-label="Loading">
+      <div class="boot-skeleton__header" aria-hidden="true">
+        <div class="boot-skeleton__brand"></div>
+        <div class="boot-skeleton__nav"></div>
+      </div>
+      <div class="boot-skeleton__hero" aria-hidden="true">
+        <div class="boot-skeleton__copy">
+          <div class="boot-skeleton__line"></div>
+          <div class="boot-skeleton__line"></div>
+          <div class="boot-skeleton__line boot-skeleton__line--short"></div>
+          <div class="boot-skeleton__buttons">
+            <div class="boot-skeleton__button"></div>
+            <div class="boot-skeleton__button"></div>
+          </div>
+        </div>
+        <div class="boot-skeleton__image"></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script>
       (function () {

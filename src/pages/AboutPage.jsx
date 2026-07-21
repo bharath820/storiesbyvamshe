@@ -61,20 +61,10 @@ export function AboutPage() {
       );
 
       if (!isActive) {
-        next.forEach((url) => {
-          if (url && url.startsWith("blob:")) {
-            window.URL.revokeObjectURL(url);
-          }
-        });
         return;
       }
 
       setResolvedPool((prev) => {
-        prev.forEach((url) => {
-          if (url && url.startsWith("blob:")) {
-            window.URL.revokeObjectURL(url);
-          }
-        });
         return next.filter(Boolean);
       });
     }

@@ -13,7 +13,6 @@ export function ResolvedImage({ src, alt, className, loading = "lazy", fallbackS
 
   useEffect(() => {
     let isActive = true;
-    let objectUrlToRevoke = "";
 
     async function loadResolved() {
       if (!activeSrc) {
@@ -24,9 +23,6 @@ export function ResolvedImage({ src, alt, className, loading = "lazy", fallbackS
       try {
         const nextSrc = await resolveAssetUrl(activeSrc);
         if (!isActive) {
-          if (nextSrc && nextSrc.startsWith("blob:")) {
-            window.URL.revokeObjectURL(nextSrc);
-          }
           return;
         }
 
@@ -36,15 +32,8 @@ export function ResolvedImage({ src, alt, className, loading = "lazy", fallbackS
         }
 
         setResolvedSrc((prev) => {
-          if (prev && prev.startsWith("blob:")) {
-            window.URL.revokeObjectURL(prev);
-          }
           return nextSrc || "";
         });
-
-        if (nextSrc && nextSrc.startsWith("blob:")) {
-          objectUrlToRevoke = nextSrc;
-        }
       } catch {
         if (!isActive) return;
         if (sources[sourceIndex + 1]) {
@@ -59,9 +48,6 @@ export function ResolvedImage({ src, alt, className, loading = "lazy", fallbackS
 
     return () => {
       isActive = false;
-      if (objectUrlToRevoke) {
-        window.URL.revokeObjectURL(objectUrlToRevoke);
-      }
     };
   }, [activeSrc, sourceIndex, sources]);
 
