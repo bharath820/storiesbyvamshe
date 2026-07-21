@@ -143,12 +143,12 @@ export function HomePage() {
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
-          className="relative min-w-0 overflow-hidden rounded-[32px] bg-[#F8F4EE] shadow-soft"
+          className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-[32px] bg-[#F8F4EE] shadow-soft lg:justify-self-end lg:w-full lg:max-w-[500px]"
         >
           <ResolvedImage
             src={activeHero?.imageUrl || hero.image}
             alt={activeHero?.title || hero.alt}
-            className="mx-auto h-[58svh] min-h-[360px] max-h-[680px] w-full object-contain sm:h-[68svh] lg:h-[76svh]"
+            className="absolute inset-0 h-full w-full object-cover object-center"
             loading="eager"
             fallbackSrc={hero.image}
           />

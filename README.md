@@ -13,12 +13,16 @@ npm install
 ```
 2. Copy env file and add optional contact credentials
 ```bash
+
 cp .env.example .env
 ```
 3. Start development
 ```bash
 npm run dev
 ```
+
+
+
 
 ## 2) Firebase Setup
 
@@ -28,6 +32,8 @@ npm run dev
 4. Deploy `firestore.rules` and `storage.rules` with the Firebase CLI.
 
 When Firebase is configured, public pages listen for published content in real time and admin uploads are stored in Firebase Storage.
+
+
 
 ## 3) Admin Login
 

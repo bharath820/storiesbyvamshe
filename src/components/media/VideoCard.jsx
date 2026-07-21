@@ -65,7 +65,7 @@ function getThumbnailFrameStyle(video) {
     .toLowerCase();
   const customPosition = String(video.thumbnailPosition || video.thumbnailObjectPosition || video.objectPosition || "").trim();
   const customRatio = String(video.thumbnailRatio || video.thumbnailAspectRatio || "").trim();
-  let position = customPosition || "center top";
+  let position = customPosition || "center center";
   let ratio = customRatio || "16 / 9";
 
   if (/pre[-\s]?wedding|prewedding/.test(label)) {

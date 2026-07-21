@@ -6,9 +6,12 @@ const AUTH_CHANGED_EVENT = "storiesbyvamshe:auth-changed";
 export const ADMIN_EMAIL = "storiesbyvamshe9@gmail.com";
 export const ADMIN_PASSWORD = "--N@veen5555";
 
+
+
 function isAdminEmail(email) {
   return String(email || "").trim().toLowerCase() === ADMIN_EMAIL;
 }
+
 
 function isAdminUser(user) {
   return isAdminEmail(user?.email);
